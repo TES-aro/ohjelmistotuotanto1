@@ -6,6 +6,8 @@ public class Kayttaja {
     String nimi;
     String UUID;
     String sahkoposti;
+    String salasanaHash;
+    boolean endUser = true;
     // TODO mitä nyt vielä tarvitsee.
     // Varaus[] varaukset;
 
@@ -20,6 +22,14 @@ public class Kayttaja {
 
     public String getUUID() {
         return UUID;
+    }
+
+    public void setSalasanaHash(String salasanaHash){
+	    this.salasanaHash = salasanaHash;
+    }
+
+    public void setEndUser(boolean bool){
+	    this.endUser = bool;
     }
 
     public Kayttaja(String nimi, String UUID, String sahkoposti){
