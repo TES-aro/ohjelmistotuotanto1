@@ -8,3 +8,6 @@ public class Stumps {
         return new Kayttaja("Erkki Pertti", "12345", "test@test.com");
     }
 }
+
+// tällä tyylillä kaikki viittaukset backend operaatioihin
+// GUIa kirjoittaessa, kiitos. Myöhemmin näihin helppo upottaa ne oikeat funktiot.
