@@ -7,3 +7,63 @@
 4. Laskujen hallinta ja seuranta 
 
 5. Majoittumisen raportointi 
+
+Vaatimukset 
+
+ 
+
+Yleisesti: 
+
+    Mökkien hallinta  
+
+    Majoitusvarausten hallinta  
+
+    Asiakashallinta  
+
+    Laskujen hallinta ja seuranta  
+
+    Majoittumisen raportointi 
+
+ 
+
+Ei-toiminnalliset: 
+
+    Asianmukaiset käyttäjäoikeudet ja salasanojen suojaus. 
+
+    Tietojen varmuuskopiointi ja palautusmahdollisuus. 
+
+    Tietojen tallennus ja saanti alle sekunnin viiveellä. 
+
+    Varauksen luominen tulee onnistua alle 30 sekunnissa. 
+
+    Laskun luominen tulee onnistua alle 30 sekunnissa. 
+
+    Järjestelmä on oltava helppokäyttöinen, ja henkilöstö tulee pystyä kouluttamaan sen käyttöön alle tunnissa. 
+
+    Järjestelmä pysyy toiminnallisena usean yhtäaikaisen käyttäjän kanssa. 
+
+    Päällekkäisten varausten esto. Jos mökki on jo varattu tietylle ajalle, sitä ei voi varata uudestaan samalle ajalle. 
+
+    Selkeät virheilmoitukset. 
+
+    Mahdollisuus vaihtaa kieltä (ei pakollinen) 
+
+ 
+
+ 
+
+Toiminnalliset: 
+
+    Mökkikotitien henkilöstön pitää pystyä näkemään kaikkien mökkien ominaisuudet, tila (varattu, vapaa) ja pystyä tekemään ja perumaan varauksia. 
+
+    Uusien mökkien valmistuessa tai vanhojen tuhoutuessa pitää pystyä lisäämään tai poistamaan saatavilla olevia mökkejä järjestelmästä. 
+
+    Henkilöstön tulee pystyä tekemään uusia laskuja ja merkitsemään ne maksetuiksi/maksamattomiksi. Laskusta tulee luodessa sekä asiakkaalle lähetettävä versio (PDF?), että tiedot ylös järjestelmään. 
+
+    Henkilöstön pitää nähdä tiedot asiakkaista: varaustiedot, yhteystiedot, maksetut- ja avoimet laskut. 
+
+    Asiakkaan tietoja pitää pystyä muokkaamaan lisäämisen jälkeen, ja asiakas pitää olla poistettavissa. 
+
+    Jokainen majoittuminen tulee kirjata tietojen kanssa ylös raportointia varten. 
+
+    Varauksen, laskun tai peruutuksen luonnin yhteydessä kirjataan lokitiedostoon varauksen tekijä sekä tiedot varauksesta (ei välttämätön?) 
