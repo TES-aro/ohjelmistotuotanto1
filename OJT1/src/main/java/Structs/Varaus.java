@@ -16,4 +16,44 @@ public class Varaus {
         this.alku = alku;
         this.loppu = loppu;
     }
+
+    // getterit
+
+    public String getID() {
+        return ID;
+    }
+
+    public Mokki getVarattuMokki() {
+        return varattuMokki;
+    }
+
+    public Date getAlku() {
+        return alku;
+    }
+
+    public Date getLoppu() {
+        return loppu;
+    }
+
+    // setterit
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public void setAlku(Date alku) {
+        this.alku = alku;
+    }
+
+    public void setLoppu(Date loppu) {
+        this.loppu = loppu;
+    }
+
+    public void setVaraaja(Kayttaja varaaja) {
+        this.varaaja = varaaja;
+    }
+
+    public void setVarattuMokki(Mokki varattuMokki) {
+        this.varattuMokki = varattuMokki;
+    }
 }
