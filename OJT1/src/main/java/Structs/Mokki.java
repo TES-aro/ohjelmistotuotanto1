@@ -29,6 +29,7 @@ public class Mokki {
     public String getOsoite() {
         return osoite;
     }
+    public int getMaksimiAsukkaat() {return maksimiAsukkaat;}
     public boolean getOnkoVarattu() {return onkoVarattu;}
 
     // setterit

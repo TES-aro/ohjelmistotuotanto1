@@ -1,0 +1,3 @@
+sql dump tiedoston saa avattua menemällä mysql workbenchissä server välilehdellä sijaitsevaan "data import" kohtaan.
+valitse "Import from Self-Contained File".
+Valitse sql tiedosto ja tällä tavalla sen pitäisi aueta.

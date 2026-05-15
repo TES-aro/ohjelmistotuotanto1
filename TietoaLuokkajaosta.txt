@@ -1,9 +1,0 @@
-Tänne on nyt tehty eri kansioita, jossa eri luokkia eri tarkoituksiin:
-
-Structs: sisältää muuttujat, getterit, setterit
-
-Logic: sisältää metodit joilla muuttujia käsitellään, esim. laskun tallennus tiedostoon tai maksetuksi merkkaaminen.
-        En tiedä tarvitaanko välttämättä näin montaa eri Logic-luokkaa, mutta tein nyt näin
-
-Repository: käytännössä "miten tiedot tallennetaan", tämä yhdistetään myöhemmin SQL tietokantaan. Sen sijaan että nämä olisi
-            Logic-osiossa, luokkajako helpottaa jos muutetaan esim. tallennusmetodeja
