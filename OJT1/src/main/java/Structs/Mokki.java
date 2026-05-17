@@ -8,14 +8,16 @@ public class Mokki {
     String osoite;
     int maksimiAsukkaat;
     boolean onkoVarattu;
+    int hinta;
     // mahdollisesti muut tiedot kuten koko, huoneet jne.
 
-    public Mokki(String ID, String omistajaID, String osoite, int maksimiAsukkaat, boolean onkoVarattu){
+    public Mokki(String ID, String omistajaID, String osoite, int maksimiAsukkaat, boolean onkoVarattu, int hinta){
         this.ID = ID;
         this.omistajaID = omistajaID;
         this.osoite = osoite;
         this.maksimiAsukkaat = maksimiAsukkaat;
         this.onkoVarattu = onkoVarattu;
+        this.hinta = hinta;
     }
 
 
@@ -31,6 +33,7 @@ public class Mokki {
     }
     public int getMaksimiAsukkaat() {return maksimiAsukkaat;}
     public boolean getOnkoVarattu() {return onkoVarattu;}
+    public int getHinta() {return hinta;}
 
     // setterit
     public void setOsoite(String osoite) { this.osoite = osoite; }

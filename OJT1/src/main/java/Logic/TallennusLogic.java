@@ -1,5 +1,10 @@
 package Logic;
+import SQLbackend.SQLbridge;
 import Structs.*;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 // kun luodaan esim. uusi mökki tai tehdään muutoksia, niin tätä kautta ne lisätään SQL tietokantaan. Jos on järkevämpi tapa niin kertokaa,
@@ -7,11 +12,33 @@ import java.util.List;
 
 public class TallennusLogic {
 
-    // mökit
+    private SQLbridge bridge;
+
+    public TallennusLogic(){
+        bridge = new SQLbridge();
+    }
+
 
     public void lisaaMokki(Mokki mokki) {
         // TODO Näihin metodeihin tarvitaan joku menetelmä, jolla tehdään nämä muutokset SQL tietokantaan.
         //  Nämä viittaa muihin logic-luokkiin, joihin ei puolestaan pitäisi tarvita koskea.
+
+        // esimerkkitoteutus. ehkä toimii *shrug*
+        String query = """
+            INSERT INTO mokit(mokki_id, kapasiteetti, hinta_per_yo)
+            VALUES(?, ?, ?);
+            """;
+        try {
+            PreparedStatement ps = bridge.getConnection().prepareStatement(query);
+
+            ps.setString(1,mokki.getID());
+            ps.setInt(2,mokki.getMaksimiAsukkaat());
+            ps.setInt(3,mokki.getHinta());
+            ps.execute();
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+            throw new RuntimeException(e);
+        }
     }
 
     public void poistaMokki(String mokkiID) {

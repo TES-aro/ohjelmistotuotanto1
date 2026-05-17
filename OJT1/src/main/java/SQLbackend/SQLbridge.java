@@ -14,12 +14,18 @@ public class SQLbridge {
     //ja mainitkaa disccordissa
 
     Connection connection;
+    String SQLurl = "jdbc:mysql://localhost:3306/";
+    String SQLpassword = "salasana";
+    String SQLuser = "java";
 
     private SQLbridge(Connection connection){
         this.connection = connection;
     }
+    public Connection getConnection(){
+        return connection;
+    }
 
-    static public SQLbridge connect(){
+    public SQLbridge(){
 	    // error handling on vähän sinne päin. en ole vähään aikaan leikkinyt javalla
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -28,6 +34,7 @@ public class SQLbridge {
             System.out.println("Driver not found: " + e.getMessage());
         }
 
+        /*
         String sqlUrl = System.getenv("OJT1_SQL");
         if (sqlUrl == null) {
             throw new Error("could not connect to SQL. Missing OJT1_SQL env var");
@@ -41,9 +48,16 @@ public class SQLbridge {
             throw new Error("could not find user. Missing QJT1_USER env var");
         }
 
+         */
+        // TODO hardcoded login on huono idea, mutta...
+
+        this.SQLurl = "jdbc:mysql://localhost:3306/";
+        this.SQLpassword = "salasana";
+        this.SQLuser = "java";
+
+
         try{
-            Connection connection = DriverManager.getConnection(sqlUrl, user, password);
-            return new SQLbridge(connection);
+            this.connection = DriverManager.getConnection(SQLurl, SQLuser, SQLpassword);
         } catch (SQLException e) {
             System.out.println(e);
             throw new RuntimeException(e);
