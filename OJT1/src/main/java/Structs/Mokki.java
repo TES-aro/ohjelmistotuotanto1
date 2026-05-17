@@ -1,26 +1,28 @@
 package Structs;
 
 public class Mokki {
-    String ID;
+    int ID;
     String omistajaID;
     // voidaan myös toteuttaa luokallisesti vaatimalla Omistaja ryhmän olio.
     // Omistaja omistaja;
     String osoite;
     int maksimiAsukkaat;
     boolean onkoVarattu;
+    int hinta;
     // mahdollisesti muut tiedot kuten koko, huoneet jne.
 
-    public Mokki(String ID, String omistajaID, String osoite, int maksimiAsukkaat, boolean onkoVarattu){
+    public Mokki(int ID, String omistajaID, String osoite, int maksimiAsukkaat, boolean onkoVarattu, int hinta){
         this.ID = ID;
         this.omistajaID = omistajaID;
         this.osoite = osoite;
         this.maksimiAsukkaat = maksimiAsukkaat;
         this.onkoVarattu = onkoVarattu;
+        this.hinta = hinta;
     }
 
 
     // getterit
-    public String getID() {
+    public int getID() {
         return ID;
     }
     public String getOmistajaID() {
@@ -31,6 +33,7 @@ public class Mokki {
     }
     public int getMaksimiAsukkaat() {return maksimiAsukkaat;}
     public boolean getOnkoVarattu() {return onkoVarattu;}
+    public int getHinta() {return hinta;}
 
     // setterit
     public void setOsoite(String osoite) { this.osoite = osoite; }
