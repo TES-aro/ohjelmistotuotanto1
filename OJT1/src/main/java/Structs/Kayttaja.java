@@ -3,24 +3,33 @@ package Structs;
 import java.util.UUID;
 
 public class Kayttaja {
-    String nimi;
-    String UUID;
+    String etunimi;
+    String sukunimi;
+    int UUID;
     String sahkoposti;
     String puhelinNro; // lisätty
-    String salasanaHash;
-    boolean endUser = true;
+    //String salasanaHash;
+    //boolean endUser = true;
     // TODO mitä nyt vielä tarvitsee.
     // Varaus[] varaukset;
 
 
     //getterit + setterit
 
-    public String getNimi() {
-        return nimi;
+    public String getEtunimi() {
+        return etunimi;
     }
 
-    public void setNimi(String nimi) {
-        this.nimi = nimi;
+    public String getSukunimi() {
+	    	return sukunimi;
+    }
+
+    public void setEtuimi(String etunimi) {
+        this.etunimi = etunimi;
+    }
+
+    public void setSukunimi(String sukunimi) {
+	    this.etunimi = etunimi;
     }
 
 
@@ -40,10 +49,11 @@ public class Kayttaja {
         this.puhelinNro = puhelinNro;
     }
 
-    public String getUUID() {
+    public int getUUID() {
         return UUID;
     }
 
+    /*
     public boolean getIsEndUser() {
         return endUser;
     }
@@ -59,10 +69,11 @@ public class Kayttaja {
     public void setEndUser(boolean bool) {
         this.endUser = bool;
     }
+*/
 
-
-    public Kayttaja(String nimi, String UUID, String sahkoposti) {
-        this.nimi = nimi;
+    public Kayttaja(String etunimi, String sukunimi, int UUID, String sahkoposti) {
+        this.etunimi = etunimi;
+        this.sukunimi = sukunimi;
         this.UUID = UUID;
         this.sahkoposti = sahkoposti;
     }

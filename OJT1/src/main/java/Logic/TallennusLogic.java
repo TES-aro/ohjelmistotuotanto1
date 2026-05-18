@@ -1,11 +1,8 @@
 package Logic;
-import SQLbackend.SQLbridge;
 import Structs.*;
+import SQLbackend.LG;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +11,15 @@ import java.util.List;
 
 public class TallennusLogic {
 
-    private Connection conn;
+    private final Connection conn;
 
+    /*
     public TallennusLogic(){
         conn = new SQLbridge().getConnection();
     }
+     */
+
+    public TallennusLogic(Connection conn) { this.conn = conn; }
 
 
     public void lisaaMokki(Mokki mokki) {
@@ -30,47 +31,95 @@ public class TallennusLogic {
             INSERT INTO mokit(mokki_id, kapasiteetti, hinta_per_yo)
             VALUES(?, ?, ?);
             """;
-        try {
-            PreparedStatement ps = conn.prepareStatement(query);
 
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1,mokki.getID());
             ps.setInt(2,mokki.getMaksimiAsukkaat());
-            ps.setInt(3,mokki.getHinta());
+            ps.setDouble(3,mokki.getHinta());
             ps.execute();
-            ps.close();
         } catch (SQLException e) {
-            System.out.println(e.toString());
+            LG.log(e.toString());
             throw new RuntimeException(e);
         }
     }
 
-    public void poistaMokki(String mokkiID) {
+    public void poistaMokki (Mokki mokki) {
+        try {
+            poistaMokki(mokki.getID());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void poistaMokki(int mokkiID) {
+        String q = "DELETE FROM mokit WHERE mokki_id = ?;";
+        try (PreparedStatement ps = conn.prepareStatement(q)) {
+            ps.setInt(1, mokkiID);
+            ps.execute();
+        } catch (Exception e) {
+            LG.log(e.toString());
+            throw new RuntimeException(e);
+        }
     }
 
     public void paivitaMokki(Mokki mokki) {
+        String q = """
+                UPDATE mokit
+                SET kapasiteetti = ?,
+                hinta_per_yo = ?,
+                varattu = ?
+                WHERE mokki_id = ?;
+                """;
+
+        try (PreparedStatement ps = conn.prepareStatement(q)) {
+            ps.setInt(1, mokki.getMaksimiAsukkaat());
+            ps.setDouble(2, mokki.getHinta());
+            ps.setBoolean(3, mokki.getOnkoVarattu());
+            ps.setInt(4, mokki.getID());
+            ps.execute();
+
+        } catch (Exception e){
+            LG.log(e.toString());
+            throw new RuntimeException(e);
+        }
     }
 
     public List<Mokki> haeMokit() {// hae lista kaikista mökeistä
-        String q = "SELECT * FROM mokkit;";
+        String q = "SELECT * FROM mokit;";
         List<Mokki> mokit = new ArrayList<>();
-        try {
-            ResultSet rs = conn.createStatement().executeQuery(q);
+        try (ResultSet rs = conn.createStatement().executeQuery(q)){
             while(rs.next()){
                 int mokkiID = rs.getInt("mokki_id");
                 int kapasiteetti = rs.getInt("kapasiteetti");
-                int hinta = rs.getInt("hinta_per_yo");
-                System.out.format("ID: %d , kapasiteetti: %d , hinta per yö: %d €\n",
-                        mokkiID, kapasiteetti, hinta);
+                double hinta = rs.getDouble("hinta_per_yo");
+                boolean varattu = rs.getBoolean("varattu");
+
+                Mokki mokki = new Mokki(mokkiID, kapasiteetti, varattu, hinta);
+                mokit.add(mokki);
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
+        return mokit;
     }
 
-    public Mokki haeMokki(String mokkiID) { // hae ID:n perusteella yksittäinen mökki
-        return null;
+    public Mokki haeMokki(int mokkiID) {
+        // hae ID:n perusteella yksittäinen mökki
+        String q = "SELECT * FROM mokit WHERE mokki_id = ?;";
+        try (PreparedStatement stm = conn.prepareStatement(q)) {
+            stm.setInt(1, mokkiID);
+            ResultSet rs = stm.executeQuery();
+            rs.next();
+            return new Mokki(
+                    rs.getInt("mokki_id"),
+                    rs.getInt("kapasiteetti"),
+                    rs.getBoolean("varattu"),
+                    rs.getDouble("hinta_per_yo")
+            );
+        } catch (Exception e) {
+            LG.log(e.toString());
+            throw new RuntimeException(e);
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package Logic;
 
+
 import Structs.Kayttaja;
 import Structs.Mokki;
 import Structs.Varaus;
