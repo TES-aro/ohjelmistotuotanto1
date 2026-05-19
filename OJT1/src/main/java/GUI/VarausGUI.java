@@ -32,6 +32,12 @@ public class VarausGUI extends Application {
     Button luo            = new Button("Luo");
     HBox poistaJaLuo      = new HBox(poista, luo);
 
+    //Mökki-oliot
+    Mokki mokki1 = new Mokki("Mökki 1", "10", "Kekkilänkatu 67", 10, false);
+    Mokki mokki2 = new Mokki("Mökki 2", "15", "Kanadakuja 69", 15, true);
+    Mokki mokki3 = new Mokki("Mökki 3", "20", "Puuhöylätie 727", 20, false);
+    List<Mokki> mokkilista = List.of(mokki1, mokki2, mokki3);
+
     ScrollPane scrollPane = new ScrollPane();
     VBox listaus          = new VBox(scrollPane, poistaJaLuo);
     HBox nakymavalinta    = new HBox(mokit, laskut, varaukset, asiakkaat, raportit);
@@ -39,11 +45,6 @@ public class VarausGUI extends Application {
     HBox lisatietonapit   = new HBox(muokkaa, tallenna);
     VBox lisatietonakyma  = new VBox(10,kentat, lisatietonapit);
     HBox nakyma           = new HBox(listaus, lisatietonakyma);
-
-    TallennusLogic tallennus = new TallennusLogic();
-    MokkiLogic mokkiLogic = new MokkiLogic(tallennus);
-    RaporttiLogic raporttiLogic = new RaporttiLogic();
-    VarausLogic varausLogic = new VarausLogic(tallennus, mokkiLogic);
 
     public static void main(String[] args) {
         launch(args);
@@ -57,6 +58,7 @@ public class VarausGUI extends Application {
         lisatietonakyma.setSpacing(10);
         listaus.setSpacing(10);
         nakyma.setSpacing(10);
+        scrollPane.setPrefSize(300, 200);
     }
 
     // Luo tekstikentät mökin tietojen näyttämiseen
@@ -227,9 +229,8 @@ public class VarausGUI extends Application {
         });
     }
 
-    //TODO: luo mokki lista tietokannasta, lisäksi funktiot muille listoille
+    //TODO: luo mökkilista, lisäksi funktiot muille listoille
     public void luoMokkiLista() {
-        List<Mokki> mokkilista = mokkiLogic.haeMokit();
         for (Mokki mokki : mokkilista) {
             Text text = new Text(mokki.toString());
             scrollPane.setContent(text);
@@ -240,6 +241,7 @@ public class VarausGUI extends Application {
     public void start(Stage primaryStage) {
         luoMokkiKentat();
         nakymaAsetukset();
+        luoMokkiLista();
 
         mokit.setOnAction(e -> {
             luoMokkiKentat();
@@ -291,6 +293,7 @@ public class VarausGUI extends Application {
         poista.setOnAction(e -> {});
 
         VBox root = new VBox(nakymavalinta, nakyma);
+        root.setSpacing(30);
         Scene scene = new Scene(root);
         primaryStage.setTitle("Varausjärjestelmä 3000");
         primaryStage.setScene(scene);
