@@ -3,13 +3,13 @@ package Structs;
 import java.util.Date;
 
 public class Varaus {
-    private String ID;
+    private int ID;
     private Mokki varattuMokki;
     private Kayttaja varaaja;
     private Date alku;
     private Date loppu;
 
-    public Varaus(String ID, Mokki varattuMokki, Kayttaja varaaja, Date alku, Date loppu){
+    public Varaus(int ID, Mokki varattuMokki, Kayttaja varaaja, Date alku, Date loppu){
         this.ID = ID;
         this.varattuMokki = varattuMokki;
         this.varaaja = varaaja;
@@ -19,7 +19,7 @@ public class Varaus {
 
     // getterit
 
-    public String getID() {
+    public int getID() {
         return ID;
     }
 
@@ -39,7 +39,7 @@ public class Varaus {
 
     // setterit
 
-    public void setID(String ID) {
+    public void setID(int ID) {
         this.ID = ID;
     }
 
