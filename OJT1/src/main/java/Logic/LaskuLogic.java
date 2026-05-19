@@ -14,27 +14,62 @@ import java.util.List;
 // Täällä on ainakin laskun luominen, maksetuksi merkitseminen ja tiedostojen luominen
 
 public class LaskuLogic {
+    private final TallennusLogic tallennus;
+    public LaskuLogic(TallennusLogic tallennus) {
+        this.tallennus = tallennus;
+    }
 
 
-    public Lasku luoLasku(Kayttaja maksaja, Varaus varaus, Laskutettava[] laskutettavat, Date erapaiva) {
-        Lasku lasku = new Lasku(maksaja, varaus, false, erapaiva, laskutettavat);
+    public Lasku luoLasku(Kayttaja maksaja, Varaus varaus, Laskutettava[] laskutettavat, Date luontipvm, Date erapaiva) {
+        Lasku lasku = new Lasku(maksaja, varaus, false, luontipvm, erapaiva, laskutettavat);
 
-        // TODO tässä vaiheessa TallennusLogic-luokkaan lisätään lasku
+        // Tallennetaan tietokantaan
+        tallennus.lisaaLasku(lasku);
 
-        // Tallennetaan tekstitiedosto laskun luonnin yhteydessä
+        // Tallennetaan tekstitiedosto
+        String tiedostonimi = "lasku_" + varaus.getID() + ".txt";
         try {
-            String tiedostonimi = "lasku_" + varaus.getID() + ".txt";
             tallennaTiedostoon(lasku, tiedostonimi);
-            System.out.println("Lasku tallennettu tiedostoon " + tiedostonimi);
+            System.out.println("Lasku tallennettu tiedostoon: " + tiedostonimi);
         } catch (IOException e) {
-            System.err.println("Laskun tallennus epäonnistui: " + e.getMessage());
+            System.err.println("Laskun tallennus tiedostoon epäonnistui: " + e.getMessage());
         }
 
         return lasku;
     }
 
+
     public void merkitseMaksetuksi(Lasku lasku, boolean maksettu) {
         lasku.setMaksettu(maksettu);
+        tallennus.paivitaLasku(lasku);
+    }
+
+    public List<Lasku> haeLaskut() {
+        return tallennus.haeLaskut();
+    }
+
+    public List<Lasku> haeAsiakkaanLaskut(Kayttaja kayttaja) {
+        return tallennus.haeLaskutKayttajalle(kayttaja.getUUID());
+    }
+
+    private void tallennaTiedostoon(Lasku lasku, String tiedostonimi) throws IOException {
+        try (FileWriter kirjuri = new FileWriter(tiedostonimi)) {
+            kirjuri.write("Lasku\n\n");
+            kirjuri.write("Asiakas:   " + lasku.getMaksaja().getNimi() + "\n");
+            kirjuri.write("Sähköpostiosoite:" + lasku.getMaksaja().getSahkoposti() + "\n");
+            kirjuri.write("Varaus ID: " + lasku.getVaraus().getID() + "\n");
+            kirjuri.write("Mökki ID:     " + lasku.getVaraus().getVarattuMokki().getID() + "\n");
+            kirjuri.write("Ajalla:    " + lasku.getVaraus().getAlku() + " – " + lasku.getVaraus().getLoppu() + "\n");
+            kirjuri.write("Eräpäivä:  " + lasku.getErapaiva() + "\n\n");
+
+            // TODO Luetellaan kaikki laskutettavat rivit
+
+            // kirjuri.write(String.format("YHTEENSÄ:  %.2f €%n", lasku.getLoppusumma()));
+
+            if (lasku.isMaksettu()) {kirjuri.write("Maksettu: Kyllä");}
+            else if (!lasku.isMaksettu()) {kirjuri.write("Maksettu: Ei");}
+
+        }
     }
 
 
