@@ -34,7 +34,7 @@ public class TallennusLogic {
 
         try (PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1,mokki.getID());
-            ps.setInt(2,mokki.getMaksimiAsukkaat());
+            ps.setInt(2,mokki.getKapasiteetti());
             ps.setDouble(3,mokki.getHinta());
             ps.execute();
         } catch (SQLException e) {
@@ -66,15 +66,13 @@ public class TallennusLogic {
                 UPDATE mokit
                 SET kapasiteetti = ?,
                 hinta_per_yo = ?,
-                varattu = ?
                 WHERE mokki_id = ?;
                 """;
 
         try (PreparedStatement ps = conn.prepareStatement(q)) {
-            ps.setInt(1, mokki.getMaksimiAsukkaat());
+            ps.setInt(1, mokki.getKapasiteetti());
             ps.setDouble(2, mokki.getHinta());
-            ps.setBoolean(3, mokki.getOnkoVarattu());
-            ps.setInt(4, mokki.getID());
+            ps.setInt(3, mokki.getID());
             ps.execute();
 
         } catch (Exception e){
@@ -91,9 +89,8 @@ public class TallennusLogic {
                 int mokkiID = rs.getInt("mokki_id");
                 int kapasiteetti = rs.getInt("kapasiteetti");
                 double hinta = rs.getDouble("hinta_per_yo");
-                boolean varattu = rs.getBoolean("varattu");
 
-                Mokki mokki = new Mokki(mokkiID, kapasiteetti, varattu, hinta);
+                Mokki mokki = new Mokki(mokkiID, kapasiteetti, hinta);
                 mokit.add(mokki);
             }
 
@@ -113,7 +110,6 @@ public class TallennusLogic {
             return new Mokki(
                     rs.getInt("mokki_id"),
                     rs.getInt("kapasiteetti"),
-                    rs.getBoolean("varattu"),
                     rs.getDouble("hinta_per_yo")
             );
         } catch (Exception e) {

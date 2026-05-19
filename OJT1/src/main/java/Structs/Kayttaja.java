@@ -5,7 +5,7 @@ import java.util.UUID;
 public class Kayttaja {
     String etunimi;
     String sukunimi;
-    int UUID;
+    int ID;
     String sahkoposti;
     String puhelinNro; // lisätty
     //String salasanaHash;
@@ -49,8 +49,8 @@ public class Kayttaja {
         this.puhelinNro = puhelinNro;
     }
 
-    public int getUUID() {
-        return UUID;
+    public int getID() {
+        return ID;
     }
 
     /*
@@ -71,10 +71,10 @@ public class Kayttaja {
     }
 */
 
-    public Kayttaja(String etunimi, String sukunimi, int UUID, String sahkoposti) {
+    public Kayttaja(String etunimi, String sukunimi, int ID, String sahkoposti) {
         this.etunimi = etunimi;
         this.sukunimi = sukunimi;
-        this.UUID = UUID;
+        this.ID = ID;
         this.sahkoposti = sahkoposti;
     }
 }

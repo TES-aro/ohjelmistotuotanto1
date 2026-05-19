@@ -20,7 +20,7 @@ public class VarausLogic {
         this.mokkiLogic = mokkiLogic;
     }
 
-    public Varaus luoVaraus(String varausID, Mokki mokki, Kayttaja varaaja, Date alku, Date loppu) {     // TODO päällekäisyyden esto (ei kahta varausta samalle ajalle yhdelle mökille)
+    public Varaus luoVaraus(int varausID, Mokki mokki, Kayttaja varaaja, Date alku, Date loppu) {     // TODO päällekäisyyden esto (ei kahta varausta samalle ajalle yhdelle mökille)
 
         Varaus varaus = new Varaus(varausID, mokki, varaaja, alku, loppu);
         tallennus.lisaaVaraus(varaus);

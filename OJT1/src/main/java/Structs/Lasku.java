@@ -5,16 +5,15 @@ import java.util.Date;
 public class Lasku {
     Kayttaja maksaja;
     Varaus varaus;
-    Laskutettava[] laskutettavat;
+    //Laskutettava[] laskutettavat;
     boolean maksettu; // lisätty
     Date erapaiva; // lisätty
 
-    public Lasku(Kayttaja maksaja, Varaus varaus, boolean maksettu, Date erapaiva, Laskutettava[] laskutettavat){
+    public Lasku(Kayttaja maksaja, Varaus varaus, boolean maksettu, Date erapaiva){
         this.maksaja = maksaja;
         this.varaus = varaus;
         this.maksettu = maksettu;
         this.erapaiva = erapaiva;
-        this.laskutettavat = laskutettavat;
     }
 
     // getterit
@@ -27,9 +26,9 @@ public class Lasku {
         return varaus;
     }
 
-    public Laskutettava[] getLaskutettavat() {
-        return laskutettavat;
-    }
+   // public Laskutettava[] getLaskutettavat() {
+   //     return laskutettavat;
+   // }
 
     public boolean isMaksettu() {
         return maksettu;
