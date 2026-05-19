@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="varausjarjestelma300_frontend" />
         <module name="OJT1" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="varausjarjestelma300_frontend" target="25" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

@@ -143,18 +143,18 @@ public class TallennusLogic {
     public void lisaaVaraus(Varaus varaus) {
     }
 
-    public void poistaVaraus(String varausID) {
+    public void poistaVaraus(int varausID) {
     }
 
     public List<Varaus> haeVaraukset() { // kaikki
         return null;
     }
 
-    public List<Varaus> haeVarauksetKayttajalle(String uuid) { // yksittäinen
+    public List<Varaus> haeVarauksetKayttajalle(int uuid) { // yksittäinen
         return null;
     }
 
-    public List<Varaus> haeVarauksetMokille(String mokkiID) {
+    public List<Varaus> haeVarauksetMokille(int mokkiID) {
         return null;
     }
 
@@ -170,7 +170,7 @@ public class TallennusLogic {
         return null;
     }
 
-    public List<Lasku> haeLaskutKayttajalle(String uuid) {
+    public List<Lasku> haeLaskutKayttajalle(int uuid) {
         return null;
     }
 }

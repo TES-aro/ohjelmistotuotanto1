@@ -10,7 +10,11 @@ public class Varaus {
     private Date loppu;
     private double hinta;
 
+<<<<<<< HEAD
     public Varaus(int ID, Mokki varattuMokki, Kayttaja varaaja, Date alku, Date loppu, Double hinta){
+=======
+    public Varaus(int ID, Mokki varattuMokki, Kayttaja varaaja, Date alku, Date loppu){
+>>>>>>> 5a0f722239bfb7898cea21f07b098071b29478b7
         this.ID = ID;
         this.varattuMokki = varattuMokki;
         this.varaaja = varaaja;
@@ -21,11 +25,15 @@ public class Varaus {
 
     // getterit
 
+<<<<<<< HEAD
     public double getHinta() {
 	    return hinta;
     }
 
     public String getID() {
+=======
+    public int getID() {
+>>>>>>> 5a0f722239bfb7898cea21f07b098071b29478b7
         return ID;
     }
 

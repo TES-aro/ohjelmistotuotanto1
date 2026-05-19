@@ -19,7 +19,7 @@ public class MokkiLogic {     //Tässä luokassa mökkien lisäys, poisto, haku,
         return mokki;
     }
 
-    public void poistaMokki(String mokkiID) { // poista mökki ID:n perusteella, tallenna muutos
+    public void poistaMokki(int mokkiID) { // poista mökki ID:n perusteella, tallenna muutos
         tallennus.poistaMokki(mokkiID);
     }
 
@@ -31,11 +31,11 @@ public class MokkiLogic {     //Tässä luokassa mökkien lisäys, poisto, haku,
         return tallennus.haeMokit();
     }
 
-    public Mokki haeMokki(String mokkiID) { // palauttaa yksittäisen mökin
+    public Mokki haeMokki(int mokkiID) { // palauttaa yksittäisen mökin
         return tallennus.haeMokki(mokkiID);
     }
 
-    public void asetaVarausTila(String mokkiID, boolean onkoVarattu) { // merkitse mökki varatuksi/varaamattomaksi
+    public void asetaVarausTila(int mokkiID, boolean onkoVarattu) { // merkitse mökki varatuksi/varaamattomaksi
         Mokki mokki = tallennus.haeMokki(mokkiID);
         mokki.setOnkoVarattu(onkoVarattu);
         tallennus.paivitaMokki(mokki);
