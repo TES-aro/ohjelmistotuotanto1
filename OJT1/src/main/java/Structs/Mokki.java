@@ -2,20 +2,15 @@ package Structs;
 
 public class Mokki {
     int ID;
-    String omistajaID;
-    String osoite;
-    int maksimiAsukkaat;
-    boolean onkoVarattu;
+    int kapasiteetti;
     double hinta;
 
-    public Mokki(int ID, String omistajaID, String osoite, int maksimiAsukkaat, boolean onkoVarattu, double hinta){
+    public Mokki(int ID, int kapasiteetti, double hinta){
         this.ID = ID;
-        this.omistajaID = omistajaID;
-        this.osoite = osoite;
-        this.maksimiAsukkaat = maksimiAsukkaat;
-        this.onkoVarattu = onkoVarattu;
+        this.kapasiteetti = kapasiteetti;
         this.hinta = hinta;
     }
+
 
     // getterit
     public int getID() {
@@ -28,15 +23,11 @@ public class Mokki {
        return osoite;
     }
 
-    public int getMaksimiAsukkaat() {return maksimiAsukkaat;}
-    public boolean getOnkoVarattu() {return onkoVarattu;}
+    public int getKapasiteetti() {return kapasiteetti;}
     public double getHinta() {return hinta;}
 
     // setterit
-    public void setID(int ID) { this.ID = ID; }
-    public void setOmistajaID(String omistajaID) { this.omistajaID = omistajaID; }
-    public void setOsoite(String osoite) { this.osoite = osoite; }
-    public void setMaksimiAsukkaat(int maksimiAsukkaat) { this.maksimiAsukkaat = maksimiAsukkaat; }
-    public void setOnkoVarattu(boolean onkoVarattu) {this.onkoVarattu = onkoVarattu;}
-    public void setHinta(double hinta) {this.hinta = hinta;}
+    //public void setOsoite(String osoite) { this.osoite = osoite; }
+    public void setKapasiteetti(int kapasiteetti) { this.kapasiteetti = kapasiteetti; }
+    public void setHinta(double hinta) { this.hinta = hinta; }
 }

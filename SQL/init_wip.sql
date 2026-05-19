@@ -109,7 +109,7 @@ CREATE TABLE `varaukset` (
   `varaus_id` int NOT NULL AUTO_INCREMENT,
   `alku_pvm` date NOT NULL DEFAULT (curdate()),
   `loppu_pvm` date NOT NULL,
-  `hinta` decimal(8,2) NOT NULL,
+  `hinta_per_yo` decimal(8,2) NOT NULL,
   `asiakas_id` int DEFAULT NULL,
   `mokki_id` int DEFAULT NULL,
   PRIMARY KEY (`varaus_id`),

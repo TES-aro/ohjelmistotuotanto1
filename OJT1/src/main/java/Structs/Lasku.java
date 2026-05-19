@@ -3,6 +3,15 @@ package Structs;
 import java.util.Date;
 
 public class Lasku {
+<<<<<<< HEAD
+    Kayttaja maksaja;
+    Varaus varaus;
+    //Laskutettava[] laskutettavat;
+    boolean maksettu; // lisätty
+    Date erapaiva; // lisätty
+
+    public Lasku(Kayttaja maksaja, Varaus varaus, boolean maksettu, Date erapaiva){
+=======
     private int laskuID;
     private Kayttaja maksaja;
     private Varaus varaus;
@@ -12,12 +21,12 @@ public class Lasku {
     private Date erapaiva;
 
     public Lasku(Kayttaja maksaja, Varaus varaus, boolean maksettu, Date luontipvm, Date erapaiva, Laskutettava[] laskutettavat){
+>>>>>>> 5a0f722239bfb7898cea21f07b098071b29478b7
         this.maksaja = maksaja;
         this.varaus = varaus;
         this.maksettu = maksettu;
         this.luontipvm = luontipvm;
         this.erapaiva = erapaiva;
-        this.laskutettavat = laskutettavat;
     }
 
     // getterit
@@ -38,9 +47,9 @@ public class Lasku {
         return varaus;
     }
 
-    public Laskutettava[] getLaskutettavat() {
-        return laskutettavat;
-    }
+   // public Laskutettava[] getLaskutettavat() {
+   //     return laskutettavat;
+   // }
 
     public boolean isMaksettu() {
         return maksettu;
