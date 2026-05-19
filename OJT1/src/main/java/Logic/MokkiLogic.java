@@ -6,15 +6,15 @@ import java.util.List;
 
 public class MokkiLogic {     //Tässä luokassa mökkien lisäys, poisto, haku, ja varaustilanteen vaihtaminen
 
-    private final TallennusLogic tallennus; // Tämän avulla saadaan yhteys tietokantaan, ilman että tätä luokkaa tarvitsee muuttaa
+    private final TallennusLogic tallennus;
 
     public MokkiLogic(TallennusLogic tallennus) {
         this.tallennus = tallennus;
     }
 
 
-    public Mokki lisaaMokki(int ID, int hinta, int maksimiAsukkaat) { // luo uusi mökki ja tallenna se
-        Mokki mokki = new Mokki(ID, maksimiAsukkaat, hinta);
+    public Mokki lisaaMokki(int ID, String omistajaID, String osoite, int maksimiAsukkaat, boolean onkoVarattu, int hinta) { // luo uusi mökki ja tallenna se
+        Mokki mokki = new Mokki(ID, omistajaID, osoite, maksimiAsukkaat, onkoVarattu, hinta);
         tallennus.lisaaMokki(mokki);
         return mokki;
     }
@@ -29,11 +29,11 @@ public class MokkiLogic {     //Tässä luokassa mökkien lisäys, poisto, haku,
 
     public List<Mokki> haeMokit() { // palauttaa listan kaikista mökeistä
         return tallennus.haeMokit();
-    }
+    } // hae kaikki mökit
 
     public Mokki haeMokki(int mokkiID) { // palauttaa yksittäisen mökin
         return tallennus.haeMokki(mokkiID);
-    }
+    } // hae mökki ID:n perusteella
 
     public void asetaVarausTila(int mokkiID, boolean onkoVarattu) { // merkitse mökki varatuksi/varaamattomaksi
         Mokki mokki = tallennus.haeMokki(mokkiID);
@@ -41,7 +41,4 @@ public class MokkiLogic {     //Tässä luokassa mökkien lisäys, poisto, haku,
         tallennus.paivitaMokki(mokki);
 
     }
-
-
-
 }
