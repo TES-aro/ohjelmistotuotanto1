@@ -2,13 +2,8 @@ package Structs;
 
 public class Mokki {
     int ID;
-    //String omistajaID;
-    // voidaan myös toteuttaa luokallisesti vaatimalla Omistaja ryhmän olio.
-    // Omistaja omistaja;
-    //String osoite;
     int kapasiteetti;
     double hinta;
-    // mahdollisesti muut tiedot kuten koko, huoneet jne.
 
     public Mokki(int ID, int kapasiteetti, double hinta){
         this.ID = ID;
@@ -21,13 +16,12 @@ public class Mokki {
     public int getID() {
         return ID;
     }
-    //public String getOmistajaID() {
-    //    return omistajaID;
-    //}
-
-    //public String getOsoite() {
-    //    return osoite;
-    //}
+    public String getOmistajaID() {
+        return omistajaID;
+    }
+    public String getOsoite() {
+       return osoite;
+    }
 
     public int getKapasiteetti() {return kapasiteetti;}
     public double getHinta() {return hinta;}
