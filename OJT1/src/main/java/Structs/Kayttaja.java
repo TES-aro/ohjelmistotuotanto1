@@ -24,12 +24,12 @@ public class Kayttaja {
 	    	return sukunimi;
     }
 
-    public void setEtuimi(String etunimi) {
+    public void setEtunimi(String etunimi) {
         this.etunimi = etunimi;
     }
 
     public void setSukunimi(String sukunimi) {
-	    this.etunimi = etunimi;
+	    this.sukunimi = sukunimi;
     }
 
 
@@ -44,9 +44,6 @@ public class Kayttaja {
     public String getPuhelinNro() {
         return puhelinNro;
     }
-    public void setID(int anInt) {
-        this.ID = anInt;
-    }
 
     public void setPuhelinNro(String puhelinNro) {
         this.puhelinNro = puhelinNro;
@@ -54,6 +51,10 @@ public class Kayttaja {
 
     public int getID() {
         return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     /*
@@ -81,7 +82,5 @@ public class Kayttaja {
         this.sahkoposti = sahkoposti;
         this.puhelinNro = puhelinNro;
     }
-
-
 }
 

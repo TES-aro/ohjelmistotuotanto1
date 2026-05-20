@@ -7,14 +7,13 @@ public class Lasku {
     private int laskuID;
     private Kayttaja maksaja;
     private Varaus varaus;
-    private double kokonaissuma;
-    //private int paivat;
+    private double kokonaissumma;
     private boolean maksettu;
     private Date luontipvm;
     private Date erapaiva;
 
     public Lasku(int id, Kayttaja maksaja, Varaus varaus, boolean maksettu,
-                 Date luontipvm, Date erapaiva, double kokonaissuma){
+                 Date luontipvm, Date erapaiva, double kokonaissumma){
         this.maksaja = maksaja;
         this.varaus = varaus;
         this.maksettu = maksettu;
@@ -23,12 +22,12 @@ public class Lasku {
     }
 
     public Lasku(Kayttaja maksaja, Varaus varaus,  Date erapaiva,
-                  double kokonaissuma){
+                  double kokonaissumma){
         this.maksaja = maksaja;
         this.varaus = varaus;
         this.maksettu = false;
 
-        this.kokonaissuma = kokonaissuma;
+        this.kokonaissumma = kokonaissumma;
         this.luontipvm = new Date();
         this.erapaiva = erapaiva;
     }
@@ -49,8 +48,8 @@ public class Lasku {
 
      */
 
-    public double getKokonaissuma() {
-	    return kokonaissuma;
+    public double getKokonaissumma() {
+	    return kokonaissumma;
     }
 
     public Kayttaja getMaksaja() {
