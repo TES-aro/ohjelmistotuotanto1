@@ -71,11 +71,12 @@ public class Kayttaja {
     }
 */
 
-    public Kayttaja(String etunimi, String sukunimi, int ID, String sahkoposti) {
+    public Kayttaja(String etunimi, String sukunimi, int ID, String sahkoposti, String puhelinNro) {
         this.etunimi = etunimi;
         this.sukunimi = sukunimi;
         this.ID = ID;
         this.sahkoposti = sahkoposti;
+        this.puhelinNro = puhelinNro;
     }
 }
 

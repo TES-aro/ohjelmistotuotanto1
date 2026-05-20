@@ -8,24 +8,24 @@ public class Varaus {
     private Kayttaja varaaja;
     private Date alku;
     private Date loppu;
-    //private double hinta;
+    private double hinta;
 
-    public Varaus(int ID, Mokki varattuMokki, Kayttaja varaaja, Date alku, Date loppu){
+    public Varaus(int ID, Mokki varattuMokki, Kayttaja varaaja, Date alku, Date loppu, double hinta){
 
         this.ID = ID;
         this.varattuMokki = varattuMokki;
         this.varaaja = varaaja;
         this.alku = alku;
         this.loppu = loppu;
-        //this.hinta = hinta;
+        this.hinta = hinta;
     }
 
     // getterit
-/*
+
     public double getHinta() {
 	    return hinta;
     }
-*/
+
     public int getID() {
         return ID;
     }
@@ -45,11 +45,11 @@ public class Varaus {
     }
 
     // setterit
-    /*
+
     public void setHinta(double hinta){
 	    this.hinta = hinta;
     }
-     */
+
 
     public void setID(int ID) {
         this.ID = ID;
