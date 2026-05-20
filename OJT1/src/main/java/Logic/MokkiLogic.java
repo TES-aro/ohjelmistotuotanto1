@@ -13,8 +13,8 @@ public class MokkiLogic {     //Tässä luokassa mökkien lisäys, poisto, haku,
     }
 
 
-    public Mokki lisaaMokki(int ID, int maksimiAsukkaat,  int hinta) { // luo uusi mökki ja tallenna se
-        Mokki mokki = new Mokki(ID, maksimiAsukkaat, hinta);
+    public Mokki lisaaMokki(String osoite, int kapasiteetti, boolean onkoVarattu,  int hinta) { // luo uusi mökki ja tallenna se. ID=0 koska se vedetään databasesta heti oikeaksi
+        Mokki mokki = new Mokki(0, osoite, kapasiteetti, false, hinta);
         tallennus.lisaaMokki(mokki);
         return mokki;
     }

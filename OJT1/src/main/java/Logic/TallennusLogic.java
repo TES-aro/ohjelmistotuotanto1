@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-// kun luodaan esim. uusi mökki tai tehdään muutoksia, niin tätä kautta ne lisätään SQL tietokantaan. Jos on järkevämpi tapa niin kertokaa,
-// SQLbackend luokan toimintaan en oo niin tutustunut.
 
 public class TallennusLogic {
 
@@ -24,8 +22,6 @@ public class TallennusLogic {
 
 
     public void lisaaMokki(Mokki mokki) {
-        // TODO Näihin metodeihin tarvitaan joku menetelmä, jolla tehdään nämä muutokset SQL tietokantaan.
-        //  Nämä viittaa muihin logic-luokkiin, joihin ei puolestaan pitäisi tarvita koskea.
 
         // esimerkkitoteutus. ehkä toimii *shrug*
         String query = """
@@ -33,14 +29,15 @@ public class TallennusLogic {
             VALUES(?, ?, ?);
             """;
 
-        try (PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1,mokki.getKapasiteetti());
-            ps.setDouble(2,mokki.getHinta());
+        try (PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) { // ID tulee databasesta
+            ps.setInt(1, mokki.getKapasiteetti());
+            ps.setDouble(2, mokki.getHinta());
             ps.setString(3, mokki.getOsoite());
             ps.execute();
-            ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()) {
-                mokki.setID(keys.getInt(1));
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    mokki.setID(generatedKeys.getInt(1)); // tästä tulee ID
+                }
             }
         } catch (SQLException e) {
             LG.log(e.toString());
@@ -71,13 +68,16 @@ public class TallennusLogic {
                 UPDATE mokit
                 SET kapasiteetti = ?,
                 hinta_per_yo = ?,
+                osoite = ?
                 WHERE mokki_id = ?;
                 """;
 
         try (PreparedStatement ps = conn.prepareStatement(q)) {
             ps.setInt(1, mokki.getKapasiteetti());
             ps.setDouble(2, mokki.getHinta());
-            ps.setInt(3, mokki.getID());
+            ps.setString(3, mokki.getOsoite());
+            ps.setInt(4, mokki.getID());
+
             ps.execute();
 
         } catch (Exception e){
@@ -94,8 +94,9 @@ public class TallennusLogic {
                 int mokkiID = rs.getInt("mokki_id");
                 int kapasiteetti = rs.getInt("kapasiteetti");
                 double hinta = rs.getDouble("hinta_per_yo");
+                String osoite = rs.getString("osoite");
 
-                Mokki mokki = new Mokki(mokkiID, kapasiteetti, hinta);
+                Mokki mokki = new Mokki(mokkiID, kapasiteetti, hinta, osoite);
                 mokit.add(mokki);
             }
 
@@ -115,7 +116,8 @@ public class TallennusLogic {
             return new Mokki(
                     rs.getInt("mokki_id"),
                     rs.getInt("kapasiteetti"),
-                    rs.getDouble("hinta_per_yo")
+                    rs.getDouble("hinta_per_yo"),
+                    rs.getString("osoite")
             );
         } catch (Exception e) {
             LG.log(e.toString());
@@ -132,24 +134,27 @@ public class TallennusLogic {
             INSERT INTO asiakkaat(etunimi, sukunimi, email, puhelin)
             VALUES(?, ?, ?, ?);
             """;
-        try (PreparedStatement stm = conn.prepareStatement(q, Statement.RETURN_GENERATED_KEYS)){
+        try (PreparedStatement stm = conn.prepareStatement(q, Statement.RETURN_GENERATED_KEYS)) { // ID tulee databasesta
+
+           // try (PreparedStatement stm = conn.prepareStatement(q)){
             stm.setString(1, kayttaja.getEtunimi());
             stm.setString(2, kayttaja.getSukunimi());
             stm.setString(3, kayttaja.getSahkoposti());
             stm.setString(4, kayttaja.getPuhelinNro());
             stm.execute();
-            ResultSet keys = stm.getGeneratedKeys();
-            if (keys.next()) {
-                kayttaja.setID(keys.getInt(1));
-            }
 
-        } catch (Exception e) {
+            try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    kayttaja.setID(generatedKeys.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
             LG.log(e.toString());
             throw new RuntimeException(e);
         }
     }
 
-    public void postaKayttaja(Kayttaja kayttaja){
+    public void poistaKayttaja(Kayttaja kayttaja){
         try{
             poistaKayttaja(kayttaja.getID());
         } catch (Exception e) {
@@ -230,24 +235,27 @@ public class TallennusLogic {
 
     // varaukset
 
-    public void lisaaVaraus(Varaus varaus) {
+    public boolean lisaaVaraus(Varaus varaus) {
         String q = """
-                INSERT INTO varaukset(alku_pvm, loppu_pvm, hinta,
+                INSERT INTO varaukset(alku_pvm, hinta, loppu_pvm, hinta,
                 asiakas_id, mokki_id)
-                VALUES(?, ?, ?, ?, ?);
+                VALUES(?, ?, ?, ?, ?, ?);
                 """;
-        try (PreparedStatement stm = conn.prepareStatement(q, Statement.RETURN_GENERATED_KEYS)){
+        try (PreparedStatement stm = conn.prepareStatement(q, Statement.RETURN_GENERATED_KEYS)) { // ID tulee databasesta
+
+            // try (PreparedStatement stm = conn.prepareStatement(q)){
             stm.setDate(1, LG.convert2SQL(varaus.getAlku()));
             stm.setDate(2, LG.convert2SQL(varaus.getLoppu()));
             stm.setDouble(3, varaus.getHinta());
             stm.setInt(4, varaus.getVaraaja().getID());
             stm.setInt(5, varaus.getVarattuMokki().getID());
-            stm.execute();
-            ResultSet keys = stm.getGeneratedKeys();
-            if (keys.next()) {
-                varaus.setID(keys.getInt(1));
+            boolean result = stm.execute();
+            try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    varaus.setID(generatedKeys.getInt(1)); // tästä tulee ID
+                }
             }
-
+            return result;
         } catch (Exception e) {
             LG.log(e.toString());
             throw new RuntimeException(e);
@@ -297,11 +305,12 @@ public class TallennusLogic {
                 int id = rs.getInt("varaus_id");
                 Date alku = LG.convert2util(rs.getDate("alku_pvm"));
                 Date loppu = LG.convert2util(rs.getDate("loppu_pvm"));
-                Double hinta = rs.getDouble("hinta");
+                Double hinta = rs.getDouble("hinta_per_yo");
 
                 Mokki mokki = new Mokki(rs.getInt("mokit.mokki_id"),
                         rs.getInt("mokit.kapasiteetti"),
-                        rs.getDouble("mokit.hinta_per_yo"));
+                        rs.getDouble("mokit.hinta_per_yo"),
+                        rs.getString("mokit.osoite"));
 
                 Kayttaja asiakas = new Kayttaja(
                         rs.getString("asiakkaat.etunimi"),
@@ -337,11 +346,12 @@ public class TallennusLogic {
                 int id = rs.getInt("varaukset.varaus_id");
                 Date alku = LG.convert2util(rs.getDate("varaukset.alku_pvm"));
                 Date loppu = LG.convert2util(rs.getDate("varaukset.loppu_pvm"));
-                Double hinta = rs.getDouble("varaukset.hinta");
+                Double hinta = rs.getDouble("varaukset.hinta_per_yo");
 
                 Mokki mokki = new Mokki(rs.getInt("mokit.mokki_id"),
                         rs.getInt("mokit.kapasiteetti"),
-                        rs.getDouble("mokit.hinta_per_yo"));
+                        rs.getDouble("mokit.hinta_per_yo"),
+                        rs.getString("mokit.osoite"));
 
                 Kayttaja asiakas = new Kayttaja(
                         rs.getString("asiakkaat.etunimi"),
@@ -376,11 +386,12 @@ public class TallennusLogic {
                 int id = rs.getInt("varaukset.varaus_id");
                 Date alku = LG.convert2util(rs.getDate("varaukset.alku_pvm"));
                 Date loppu = LG.convert2util(rs.getDate("varaukset.loppu_pvm"));
-                double hinta = rs.getDouble("varaukset.hinta");
+                double hinta = rs.getDouble("varaukset.hinta_per_yo");
 
                 Mokki mokki = new Mokki(rs.getInt("mokit.mokki_id"),
                         rs.getInt("mokit.kapasiteetti"),
-                        rs.getDouble("mokit.hinta_per_yo"));
+                        rs.getDouble("mokit.hinta_per_yo"),
+                        rs.getString("mokit.osoite"));
 
                 Kayttaja asiakas = new Kayttaja(
                         rs.getString("asiakkaat.etunimi"),
@@ -399,22 +410,24 @@ public class TallennusLogic {
 
     // laskut
 
-    public void lisaaLasku(Lasku lasku) {
+    public boolean lisaaLasku(Lasku lasku) {
         String q = """
-                INSERT INTO laskut(luonti_pvm, erapaiva, summa, maksettu, varaus_id)
-                VALUES(?, ?, ?, ?, ?);
+                INSERT INTO laskut(luonti_pvm, erapaiva, summa, varaus_id)
+                VALUES(?, ?, ?, ?);
                 """;
-        try (PreparedStatement ps = conn.prepareStatement(q, Statement.RETURN_GENERATED_KEYS)){
+        try (PreparedStatement ps = conn.prepareStatement(q, Statement.RETURN_GENERATED_KEYS)) {
+
             ps.setDate(1, LG.convert2SQL(lasku.getLuontipvm()));
             ps.setDate(2, LG.convert2SQL(lasku.getErapaiva()));
-            ps.setDouble(3, lasku.getVaraus().getHinta());
-            ps.setBoolean(4, lasku.isMaksettu());
-            ps.setInt(5, lasku.getVaraus().getID());
-            ps.execute();
-            ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()) {
-                lasku.setLaskuID(keys.getInt(1));
+            ps.setDouble(3, lasku.getKokonaissumma());
+            ps.setInt(4, lasku.getVaraus().getID());
+            boolean result = ps.execute();
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    lasku.setLaskuID(generatedKeys.getInt(1)); // tästä tulee ID
+                }
             }
+            return result;
         } catch (Exception e) {
             LG.log(e.toString());
             throw new RuntimeException(e);
@@ -423,14 +436,14 @@ public class TallennusLogic {
 
     public boolean paivitaLasku(Lasku lasku) {
         String q = """
-                UPDATE laskut
-                SET luonti_pvm = ?, erapaiva = ?, summa = ?, status = ?, varaus_id = ?
-                WHERE lasku_id = ?;
-                """;
+            UPDATE laskut
+            SET luonti_pvm = ?, erapaiva = ?, summa = ?, maksettu = ?, varaus_id = ?
+            WHERE lasku_id = ?;
+            """;
         try (PreparedStatement ps = conn.prepareStatement(q)){
             ps.setDate(1, LG.convert2SQL(lasku.getLuontipvm()));
             ps.setDate(2, LG.convert2SQL(lasku.getErapaiva()));
-            ps.setDouble(3, lasku.getKokonaissuma());
+            ps.setDouble(3, lasku.getKokonaissumma());
             ps.setBoolean(4, lasku.isMaksettu());
             ps.setInt(5, lasku.getVaraus().getID());
             ps.setInt(6, lasku.getLaskuID());
@@ -448,7 +461,7 @@ public class TallennusLogic {
                 SELECT l.*, v.* ,asiakkaat.*, mokit.* 
                 FROM laskut AS l
                     JOIN varaukset AS v
-                    ON l.varaus_id = v.varaus_id;
+                    ON l.varaus_id = v.varaus_id
                     JOIN asiakkaat
                     ON v.asiakas_id = asiakkaat.asiakas_id
                     JOIN mokit
@@ -460,16 +473,17 @@ public class TallennusLogic {
                 Date luonti = LG.convert2util(rs.getDate("l.luonti_pvm"));
                 Date erapaiva = LG.convert2util(rs.getDate("l.erapaiva"));
                 double summa = rs.getDouble("l.summa");
-                boolean maksettu = rs.getBoolean("l.status");
+                boolean maksettu = rs.getBoolean("l.maksettu");
 
-                int id = rs.getInt("varaukset.varaus_id");
-                Date alku = LG.convert2util(rs.getDate("varaukset.alku_pvm"));
-                Date loppu = LG.convert2util(rs.getDate("varaukset.loppu_pvm"));
-                double hinta = rs.getDouble("varaukset.hinta");
+                int id = rs.getInt("v.varaus_id");
+                Date alku = LG.convert2util(rs.getDate("v.alku_pvm"));
+                Date loppu = LG.convert2util(rs.getDate("v.loppu_pvm"));
+                double hinta = rs.getDouble("v.hinta");
 
                 Mokki mokki = new Mokki(rs.getInt("mokit.mokki_id"),
                         rs.getInt("mokit.kapasiteetti"),
-                        rs.getDouble("mokit.hinta_per_yo"));
+                        rs.getDouble("mokit.hinta_per_yo"),
+                        rs.getString("mokit.osoite"));
 
                 Kayttaja asiakas = new Kayttaja(
                         rs.getString("asiakkaat.etunimi"),
@@ -492,7 +506,7 @@ public class TallennusLogic {
   `luonti_pvm` date NOT NULL,
   `erapaiva` date NOT NULL,
   `summa` decimal(10,2) NOT NULL,
-  `status` varchar(20) DEFAULT NULL,
+  `maksettu` varchar(20) DEFAULT NULL,
   `varaus_id` int DEFAULT NULL,
 
  */
@@ -502,7 +516,7 @@ public class TallennusLogic {
                 SELECT l.*, v.* ,asiakkaat.*, mokit.* 
                 FROM laskut AS l
                     JOIN varaukset AS v
-                    ON l.varaus_id = v.varaus_id;
+                    ON l.varaus_id = v.varaus_id
                     JOIN asiakkaat
                     ON v.asiakas_id = asiakkaat.asiakas_id
                     JOIN mokit
@@ -517,7 +531,7 @@ public class TallennusLogic {
                 Date luonti = LG.convert2util(rs.getDate("l.luonti_pvm"));
                 Date erapaiva = LG.convert2util(rs.getDate("l.erapaiva"));
                 double summa = rs.getDouble("l.summa");
-                boolean maksettu = rs.getBoolean("l.status");
+                boolean maksettu = rs.getBoolean("l.maksettu");
 
                 int id = rs.getInt("varaukset.varaus_id");
                 Date alku = LG.convert2util(rs.getDate("varaukset.alku_pvm"));
@@ -526,7 +540,8 @@ public class TallennusLogic {
 
                 Mokki mokki = new Mokki(rs.getInt("mokit.mokki_id"),
                         rs.getInt("mokit.kapasiteetti"),
-                        rs.getDouble("mokit.hinta_per_yo"));
+                        rs.getDouble("mokit.hinta_per_yo"),
+                        rs.getString("mokit.osoite"));
 
                 Kayttaja asiakas = new Kayttaja(
                         rs.getString("asiakkaat.etunimi"),
