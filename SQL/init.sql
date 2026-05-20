@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `asiakkaat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `asiakkaat` (
-  `asiakas_id` int NOT NULL AUTO_INCREMENT,
+  `asiakas_id` int NOT NULL,
   `etunimi` varchar(255) NOT NULL,
   `sukunimi` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -52,8 +52,8 @@ DROP TABLE IF EXISTS `laskut`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `laskut` (
-  `lasku_id` int NOT NULL AUTO_INCREMENT,
-  `luonti_pvm` date NOT NULL,
+  `lasku_id` int NOT NULL,
+  `luonti_pvm` date NOT NULL DEFAULT (curdate()),
   `erapaiva` date NOT NULL,
   `summa` decimal(10,2) NOT NULL,
   `status` varchar(20) DEFAULT NULL,
@@ -106,7 +106,7 @@ DROP TABLE IF EXISTS `varaukset`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `varaukset` (
-  `varaus_id` int NOT NULL AUTO_INCREMENT,
+  `varaus_id` int NOT NULL,
   `alku_pvm` date NOT NULL DEFAULT (curdate()),
   `loppu_pvm` date NOT NULL,
   `hinta` decimal(8,2) NOT NULL,

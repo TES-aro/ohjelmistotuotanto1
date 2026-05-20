@@ -50,6 +50,7 @@ public class VarausGUI extends Application {
         launch(args);
     }
 
+
     // Sisältää kaikki asetukset ja toiminnot näkymän osalta
     public void nakymaAsetukset() {
         mokit.setDisable(true);

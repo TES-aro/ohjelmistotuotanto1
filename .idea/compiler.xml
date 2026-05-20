@@ -10,12 +10,12 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="varausjarjestelma300_frontend" target="25" />
+      <module name="varausjarjestelma300_frontend" target="23" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="OJT1" options="-parameters" />
+      <module name="OJT1" options="" />
     </option>
   </component>
 </project>
