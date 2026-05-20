@@ -8,6 +8,11 @@ public class Mokki {
     boolean onkoVarattu;
     double hinta;
 
+    public Mokki(int ID, int kapasiteetti, double hinta) {
+        this.ID = ID;
+        this.maksimiAsukkaat = kapasiteetti;
+        this.hinta = hinta;
+    }
     public Mokki(int ID, String omistajaID, String osoite, int maksimiAsukkaat, boolean onkoVarattu, double hinta){
         this.ID = ID;
         this.omistajaID = omistajaID;
@@ -22,8 +27,12 @@ public class Mokki {
         return ID;
     }
 
+    public String getOsoite() {
+        return osoite;
+    }
 
-    public int getMaksimiAsukkaat() {return maksimiAsukkaat;}
+
+    public int getKapasiteetti() {return maksimiAsukkaat;}
     public boolean getOnkoVarattu() {return onkoVarattu;}
     public double getHinta() {return hinta;}
 
@@ -34,4 +43,6 @@ public class Mokki {
     public void setMaksimiAsukkaat(int maksimiAsukkaat) { this.maksimiAsukkaat = maksimiAsukkaat; }
     public void setOnkoVarattu(boolean onkoVarattu) {this.onkoVarattu = onkoVarattu;}
     public void setHinta(double hinta) {this.hinta = hinta;}
+
+
 }
