@@ -21,12 +21,7 @@ public class Mokki {
     public int getID() {
         return ID;
     }
-    public String getOmistajaID() {
-        return omistajaID;
-    }
-    public String getOsoite() {
-       return osoite;
-    }
+
 
     public int getMaksimiAsukkaat() {return maksimiAsukkaat;}
     public boolean getOnkoVarattu() {return onkoVarattu;}

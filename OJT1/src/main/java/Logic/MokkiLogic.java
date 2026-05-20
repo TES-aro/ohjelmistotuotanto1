@@ -13,8 +13,8 @@ public class MokkiLogic {     //Tässä luokassa mökkien lisäys, poisto, haku,
     }
 
 
-    public Mokki lisaaMokki(int ID, String omistajaID, String osoite, int maksimiAsukkaat, boolean onkoVarattu, int hinta) { // luo uusi mökki ja tallenna se
-        Mokki mokki = new Mokki(ID, omistajaID, osoite, maksimiAsukkaat, onkoVarattu, hinta);
+    public Mokki lisaaMokki(int ID, int maksimiAsukkaat,  int hinta) { // luo uusi mökki ja tallenna se
+        Mokki mokki = new Mokki(ID, maksimiAsukkaat, hinta);
         tallennus.lisaaMokki(mokki);
         return mokki;
     }
@@ -34,11 +34,13 @@ public class MokkiLogic {     //Tässä luokassa mökkien lisäys, poisto, haku,
     public Mokki haeMokki(int mokkiID) { // palauttaa yksittäisen mökin
         return tallennus.haeMokki(mokkiID);
     } // hae mökki ID:n perusteella
-
+/*
     public void asetaVarausTila(int mokkiID, boolean onkoVarattu) { // merkitse mökki varatuksi/varaamattomaksi
         Mokki mokki = tallennus.haeMokki(mokkiID);
         mokki.setOnkoVarattu(onkoVarattu);
         tallennus.paivitaMokki(mokki);
 
     }
+
+ */
 }

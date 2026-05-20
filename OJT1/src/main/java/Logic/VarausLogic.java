@@ -25,14 +25,14 @@ public class VarausLogic {
         Varaus varaus = new Varaus(varausID, mokki, varaaja, alku, loppu);
         tallennus.lisaaVaraus(varaus);
 
-        mokkiLogic.asetaVarausTila(mokki.getID(), true); // merkitse mökki varatuksi
+        //mokkiLogic.asetaVarausTila(mokki.getID(), true); // merkitse mökki varatuksi
         return varaus;
     }
 
 
     public void peruutaVaraus(Varaus varaus) { // peruuta varaus ja muuta mökin tila varaamattomaksi
         tallennus.poistaVaraus(varaus.getID());
-        mokkiLogic.asetaVarausTila(varaus.getVarattuMokki().getID(), false);
+        //mokkiLogic.asetaVarausTila(varaus.getVarattuMokki().getID(), false);
     }
 
 
@@ -41,7 +41,7 @@ public class VarausLogic {
     }
 
     public List<Varaus> haeAsiakkaanVaraukset(Kayttaja kayttaja) { // palauta yksittäisen käyttäjän varaukset
-        return tallennus.haeVarauksetKayttajalle(kayttaja.getUUID());
+        return tallennus.haeVarauksetKayttajalle(kayttaja.getID());
     }
 
 

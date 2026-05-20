@@ -13,11 +13,11 @@ public class SQLbridge {
     //jos ja kun jotain puuttuu niistä niin lisätkää
     //ja mainitkaa disccordissa
 
-    Connection connection;
-    String SQLurl = "jdbc:mysql://localhost:3306/";
-    String SQLpassword = "salasana";
-    String SQLuser = "java";
-
+    //Connection connection;
+    static String SQLurl = "jdbc:mysql://localhost:3306/";
+    static String SQLpassword = "salasana";
+    static String SQLuser = "java";
+/*
     private SQLbridge(Connection connection){
         this.connection = connection;
     }
@@ -25,7 +25,9 @@ public class SQLbridge {
         return connection;
     }
 
-    public SQLbridge(){
+ */
+
+    public static Connection connect(){
 	    // error handling on vähän sinne päin. en ole vähään aikaan leikkinyt javalla
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -51,13 +53,8 @@ public class SQLbridge {
          */
         // TODO hardcoded login on huono idea, mutta...
 
-        this.SQLurl = "jdbc:mysql://localhost:3306/";
-        this.SQLpassword = "salasana";
-        this.SQLuser = "java";
-
-
         try{
-            this.connection = DriverManager.getConnection(SQLurl, SQLuser, SQLpassword);
+            return DriverManager.getConnection(SQLurl, SQLuser, SQLpassword);
         } catch (SQLException e) {
             System.out.println(e);
             throw new RuntimeException(e);
