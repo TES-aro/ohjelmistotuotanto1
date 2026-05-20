@@ -29,15 +29,19 @@ public class TallennusLogic {
 
         // esimerkkitoteutus. ehkä toimii *shrug*
         String query = """
-            INSERT INTO mokit(mokki_id, kapasiteetti, hinta_per_yo)
+            INSERT INTO mokit(kapasiteetti, hinta_per_yo, osoite)
             VALUES(?, ?, ?);
             """;
 
-        try (PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setInt(1,mokki.getID());
-            ps.setInt(2,mokki.getKapasiteetti());
-            ps.setDouble(3,mokki.getHinta());
+        try (PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1,mokki.getKapasiteetti());
+            ps.setDouble(2,mokki.getHinta());
+            ps.setString(3, mokki.getOsoite());
             ps.execute();
+            ResultSet keys = ps.getGeneratedKeys();
+            if (keys.next()) {
+                mokki.setID(keys.getInt(1));
+            }
         } catch (SQLException e) {
             LG.log(e.toString());
             throw new RuntimeException(e);
@@ -125,16 +129,19 @@ public class TallennusLogic {
 
     public void lisaaKayttaja(Kayttaja kayttaja) {
         String q = """
-            INSERT INTO asiakkaat(asiakas_id, etunimi, sukunimi, email, puhelin)
-            VALUES(?, ?, ?, ?, ?);
+            INSERT INTO asiakkaat(etunimi, sukunimi, email, puhelin)
+            VALUES(?, ?, ?, ?);
             """;
-        try (PreparedStatement stm = conn.prepareStatement(q)){
-            stm.setInt(1, kayttaja.getID());
-            stm.setString(2, kayttaja.getEtunimi());
-            stm.setString(3, kayttaja.getSukunimi());
-            stm.setString(4, kayttaja.getSahkoposti());
-            stm.setString(5, kayttaja.getPuhelinNro());
+        try (PreparedStatement stm = conn.prepareStatement(q, Statement.RETURN_GENERATED_KEYS)){
+            stm.setString(1, kayttaja.getEtunimi());
+            stm.setString(2, kayttaja.getSukunimi());
+            stm.setString(3, kayttaja.getSahkoposti());
+            stm.setString(4, kayttaja.getPuhelinNro());
             stm.execute();
+            ResultSet keys = stm.getGeneratedKeys();
+            if (keys.next()) {
+                kayttaja.setID(keys.getInt(1));
+            }
 
         } catch (Exception e) {
             LG.log(e.toString());
@@ -223,20 +230,23 @@ public class TallennusLogic {
 
     // varaukset
 
-    public boolean lisaaVaraus(Varaus varaus) {
+    public void lisaaVaraus(Varaus varaus) {
         String q = """
-                INSERT INTO varaukset(varaus_id, alku_pvm, loppu_pvm, hinta,
+                INSERT INTO varaukset(alku_pvm, loppu_pvm, hinta,
                 asiakas_id, mokki_id)
-                VALUES(?, ?, ?, ?, ?, ?);
+                VALUES(?, ?, ?, ?, ?);
                 """;
-        try (PreparedStatement stm = conn.prepareStatement(q)){
-            stm.setInt(1, varaus.getID());
-            stm.setDate(2, LG.convert2SQL(varaus.getAlku()));
-            stm.setDate(3, LG.convert2SQL(varaus.getLoppu()));
-            stm.setDouble(4, varaus.getHinta());
-            stm.setInt(5, varaus.getVaraaja().getID());
-            stm.setInt(6, varaus.getVarattuMokki().getID());
-            return stm.execute();
+        try (PreparedStatement stm = conn.prepareStatement(q, Statement.RETURN_GENERATED_KEYS)){
+            stm.setDate(1, LG.convert2SQL(varaus.getAlku()));
+            stm.setDate(2, LG.convert2SQL(varaus.getLoppu()));
+            stm.setDouble(3, varaus.getHinta());
+            stm.setInt(4, varaus.getVaraaja().getID());
+            stm.setInt(5, varaus.getVarattuMokki().getID());
+            stm.execute();
+            ResultSet keys = stm.getGeneratedKeys();
+            if (keys.next()) {
+                varaus.setID(keys.getInt(1));
+            }
 
         } catch (Exception e) {
             LG.log(e.toString());
@@ -245,7 +255,7 @@ public class TallennusLogic {
     }
 
     public boolean poistaVaraus(int varausID) {
-        String q = "DELETE * FROM varaukset WHERE varaus_id = ?;";
+        String q = "DELETE FROM varaukset WHERE varaus_id = ?;";
         try (PreparedStatement stm = conn.prepareStatement(q)){
             stm.setInt(1, varausID);
             return stm.execute();
@@ -389,18 +399,22 @@ public class TallennusLogic {
 
     // laskut
 
-    public boolean lisaaLasku(Lasku lasku) {
+    public void lisaaLasku(Lasku lasku) {
         String q = """
-                INSERT INTO laskut(lasku_id, luonti_pvm, erapaiva, summa, varaus_id
+                INSERT INTO laskut(luonti_pvm, erapaiva, summa, maksettu, varaus_id)
                 VALUES(?, ?, ?, ?, ?);
                 """;
-        try (PreparedStatement ps = conn.prepareStatement(q)){
-            ps.setInt(1, lasku.getLaskuID());
-            ps.setDate(2, LG.convert2SQL(lasku.getLuontipvm()));
-            ps.setDate(3, LG.convert2SQL(lasku.getErapaiva()));
-            ps.setDouble(4, lasku.getVaraus().getHinta());
+        try (PreparedStatement ps = conn.prepareStatement(q, Statement.RETURN_GENERATED_KEYS)){
+            ps.setDate(1, LG.convert2SQL(lasku.getLuontipvm()));
+            ps.setDate(2, LG.convert2SQL(lasku.getErapaiva()));
+            ps.setDouble(3, lasku.getVaraus().getHinta());
+            ps.setBoolean(4, lasku.isMaksettu());
             ps.setInt(5, lasku.getVaraus().getID());
-            return ps.execute();
+            ps.execute();
+            ResultSet keys = ps.getGeneratedKeys();
+            if (keys.next()) {
+                lasku.setLaskuID(keys.getInt(1));
+            }
         } catch (Exception e) {
             LG.log(e.toString());
             throw new RuntimeException(e);
@@ -416,9 +430,10 @@ public class TallennusLogic {
         try (PreparedStatement ps = conn.prepareStatement(q)){
             ps.setDate(1, LG.convert2SQL(lasku.getLuontipvm()));
             ps.setDate(2, LG.convert2SQL(lasku.getErapaiva()));
-            ps.setBoolean(3, lasku.isMaksettu());
-            ps.setInt(4, lasku.getVaraus().getID());
-            ps.setInt(5, lasku.getLaskuID());
+            ps.setDouble(3, lasku.getKokonaissuma());
+            ps.setBoolean(4, lasku.isMaksettu());
+            ps.setInt(5, lasku.getVaraus().getID());
+            ps.setInt(6, lasku.getLaskuID());
             return ps.execute();
 
         } catch (Exception e) {

@@ -44,6 +44,9 @@ public class Kayttaja {
     public String getPuhelinNro() {
         return puhelinNro;
     }
+    public void setID(int anInt) {
+        this.ID = anInt;
+    }
 
     public void setPuhelinNro(String puhelinNro) {
         this.puhelinNro = puhelinNro;
@@ -78,5 +81,7 @@ public class Kayttaja {
         this.sahkoposti = sahkoposti;
         this.puhelinNro = puhelinNro;
     }
+
+
 }
 

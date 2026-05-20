@@ -49,7 +49,7 @@ public class Lasku {
 
      */
 
-    public double getKokokaissuma() {
+    public double getKokonaissuma() {
 	    return kokonaissuma;
     }
 
