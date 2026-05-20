@@ -20,8 +20,8 @@ public class LaskuLogic {
     }
 
 
-    public Lasku luoLasku(Kayttaja maksaja, Varaus varaus, Laskutettava[] laskutettavat, Date luontipvm, Date erapaiva) {
-        Lasku lasku = new Lasku(maksaja, varaus, false, luontipvm, erapaiva, laskutettavat);
+    public Lasku luoLasku(Kayttaja maksaja, Varaus varaus, int käynninPituus, double kokonaishinta, Date luontipvm, Date erapaiva) {
+        Lasku lasku = new Lasku(maksaja, varaus, erapaiva, käynninPituus, kokonaishinta );
 
         // Tallennetaan tietokantaan
         tallennus.lisaaLasku(lasku);
@@ -49,13 +49,13 @@ public class LaskuLogic {
     }
 
     public List<Lasku> haeAsiakkaanLaskut(Kayttaja kayttaja) {
-        return tallennus.haeLaskutKayttajalle(kayttaja.getUUID());
+        return tallennus.haeLaskutKayttajalle(kayttaja.getID());
     }
 
     private void tallennaTiedostoon(Lasku lasku, String tiedostonimi) throws IOException {
         try (FileWriter kirjuri = new FileWriter(tiedostonimi)) {
             kirjuri.write("Lasku\n\n");
-            kirjuri.write("Asiakas:   " + lasku.getMaksaja().getNimi() + "\n");
+            kirjuri.write("Asiakas:   " + lasku.getMaksaja().getEtunimi() +" " + lasku.getMaksaja().getSukunimi() + "\n");
             kirjuri.write("Sähköpostiosoite:" + lasku.getMaksaja().getSahkoposti() + "\n");
             kirjuri.write("Varaus ID: " + lasku.getVaraus().getID() + "\n");
             kirjuri.write("Mökki ID:     " + lasku.getVaraus().getVarattuMokki().getID() + "\n");

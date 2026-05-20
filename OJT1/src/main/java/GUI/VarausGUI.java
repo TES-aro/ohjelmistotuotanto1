@@ -33,9 +33,9 @@ public class VarausGUI extends Application {
     HBox poistaJaLuo      = new HBox(poista, luo);
 
     //Mökki-oliot
-    Mokki mokki1 = new Mokki("Mökki 1", "10", "Kekkilänkatu 67", 10, false);
-    Mokki mokki2 = new Mokki("Mökki 2", "15", "Kanadakuja 69", 15, true);
-    Mokki mokki3 = new Mokki("Mökki 3", "20", "Puuhöylätie 727", 20, false);
+    Mokki mokki1 = new Mokki(1, 10, 10);
+    Mokki mokki2 = new Mokki(2, 15,  15);
+    Mokki mokki3 = new Mokki(3, 20,  20);
     List<Mokki> mokkilista = List.of(mokki1, mokki2, mokki3);
 
     ScrollPane scrollPane = new ScrollPane();

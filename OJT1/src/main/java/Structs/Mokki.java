@@ -16,12 +16,7 @@ public class Mokki {
     public int getID() {
         return ID;
     }
-    public String getOmistajaID() {
-        return omistajaID;
-    }
-    public String getOsoite() {
-       return osoite;
-    }
+
 
     public int getKapasiteetti() {return kapasiteetti;}
     public double getHinta() {return hinta;}

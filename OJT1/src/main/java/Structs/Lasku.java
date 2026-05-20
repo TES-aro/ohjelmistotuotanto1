@@ -3,25 +3,18 @@ package Structs;
 import java.util.Date;
 
 public class Lasku {
-<<<<<<< HEAD
-    Kayttaja maksaja;
-    Varaus varaus;
-    //Laskutettava[] laskutettavat;
-    boolean maksettu; // lisätty
-    Date erapaiva; // lisätty
 
-    public Lasku(Kayttaja maksaja, Varaus varaus, boolean maksettu, Date erapaiva){
-=======
     private int laskuID;
     private Kayttaja maksaja;
     private Varaus varaus;
-    private Laskutettava[] laskutettavat;
+    private double kokonaissuma;
+    private int paivat;
     private boolean maksettu;
     private Date luontipvm;
     private Date erapaiva;
 
-    public Lasku(Kayttaja maksaja, Varaus varaus, boolean maksettu, Date luontipvm, Date erapaiva, Laskutettava[] laskutettavat){
->>>>>>> 5a0f722239bfb7898cea21f07b098071b29478b7
+    public Lasku(Kayttaja maksaja, Varaus varaus, boolean maksettu,
+                 Date luontipvm, Date erapaiva, int paivat, double kokonaissuma){
         this.maksaja = maksaja;
         this.varaus = varaus;
         this.maksettu = maksettu;
@@ -29,6 +22,16 @@ public class Lasku {
         this.erapaiva = erapaiva;
     }
 
+    public Lasku(Kayttaja maksaja, Varaus varaus,  Date erapaiva,
+                 int paivat, double kokonaissuma){
+        this.maksaja = maksaja;
+        this.varaus = varaus;
+        this.maksettu = false;
+        this.paivat = paivat;
+        this.kokonaissuma = kokonaissuma;
+        this.luontipvm = new Date();
+        this.erapaiva = erapaiva;
+    }
     // getterit
 
     public int getLaskuID() {
@@ -37,6 +40,15 @@ public class Lasku {
 
     public Date getLuontipvm() {
         return luontipvm;
+    }
+
+
+    public int getPaivat() {
+	    return paivat;
+    }
+
+    public double getKokokaissuma() {
+	    return kokonaissuma;
     }
 
     public Kayttaja getMaksaja() {
