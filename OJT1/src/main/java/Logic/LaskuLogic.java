@@ -20,7 +20,7 @@ public class LaskuLogic {
     }
 
 
-    public Lasku luoLasku(Kayttaja maksaja, Varaus varaus, double kokonaishinta, Date luontipvm, Date erapaiva) {
+    public Lasku luoLasku(Kayttaja maksaja, Varaus varaus, double kokonaishinta, Date erapaiva) {
         Lasku lasku = new Lasku(maksaja, varaus, erapaiva, kokonaishinta );
 
         // Tallennetaan tietokantaan
