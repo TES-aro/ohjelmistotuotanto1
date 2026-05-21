@@ -15,6 +15,13 @@ public class Mokki {
         this.hinta = hinta;
     }
 
+    public Mokki(String osoite, int kapasiteetti, boolean varattu, double hinta) {
+        this.osoite = osoite;
+        this.kapasiteetti = kapasiteetti;
+        this.onkoVarattu = varattu;
+        this.hinta = hinta;
+    }
+
     public Mokki(int ID, int kapasiteetti, double hinta, String osoite) {
         this.ID = ID;
         this.kapasiteetti = kapasiteetti;
