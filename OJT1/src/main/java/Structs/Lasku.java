@@ -14,11 +14,13 @@ public class Lasku {
 
     public Lasku(int id, Kayttaja maksaja, Varaus varaus, boolean maksettu,
                  Date luontipvm, Date erapaiva, double kokonaissumma){
+        this.laskuID = id;
         this.maksaja = maksaja;
         this.varaus = varaus;
         this.maksettu = maksettu;
         this.luontipvm = luontipvm;
         this.erapaiva = erapaiva;
+        this.kokonaissumma = kokonaissumma;
     }
 
     public Lasku(Kayttaja maksaja, Varaus varaus,  Date erapaiva,

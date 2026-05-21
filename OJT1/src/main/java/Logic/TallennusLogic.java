@@ -237,9 +237,9 @@ public class TallennusLogic {
 
     public boolean lisaaVaraus(Varaus varaus) {
         String q = """
-                INSERT INTO varaukset(alku_pvm, hinta, loppu_pvm, hinta,
+                INSERT INTO varaukset(alku_pvm, loppu_pvm, hinta_per_yo,
                 asiakas_id, mokki_id)
-                VALUES(?, ?, ?, ?, ?, ?);
+                VALUES(?, ?, ?, ?, ?);
                 """;
         try (PreparedStatement stm = conn.prepareStatement(q, Statement.RETURN_GENERATED_KEYS)) { // ID tulee databasesta
 
@@ -249,6 +249,7 @@ public class TallennusLogic {
             stm.setDouble(3, varaus.getHinta());
             stm.setInt(4, varaus.getVaraaja().getID());
             stm.setInt(5, varaus.getVarattuMokki().getID());
+            //stm.setDouble(6, varaus.getHinta());
             boolean result = stm.execute();
             try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
@@ -478,7 +479,7 @@ public class TallennusLogic {
                 int id = rs.getInt("v.varaus_id");
                 Date alku = LG.convert2util(rs.getDate("v.alku_pvm"));
                 Date loppu = LG.convert2util(rs.getDate("v.loppu_pvm"));
-                double hinta = rs.getDouble("v.hinta");
+                double hinta = rs.getDouble("v.hinta_per_yo");
 
                 Mokki mokki = new Mokki(rs.getInt("mokit.mokki_id"),
                         rs.getInt("mokit.kapasiteetti"),
@@ -492,6 +493,9 @@ public class TallennusLogic {
                         rs.getString("asiakkaat.email"),
                         rs.getString("asiakkaat.puhelin"));
                 Varaus varaus = new Varaus(id, mokki, asiakas, alku, loppu, hinta);
+
+                //DEBUG
+                System.out.println(ID);
 
                 laskut.add(new Lasku(ID, asiakas, varaus, maksettu, luonti, erapaiva, summa));
             }
@@ -513,14 +517,14 @@ public class TallennusLogic {
     public List<Lasku> haeLaskutKayttajalle(int uuid) {
         ArrayList<Lasku> laskut = new ArrayList<>();
         String q = """
-                SELECT l.*, v.* ,asiakkaat.*, mokit.* 
+                SELECT l.*, varaukset.* ,asiakkaat.*, mokit.* 
                 FROM laskut AS l
-                    JOIN varaukset AS v
-                    ON l.varaus_id = v.varaus_id
+                    JOIN varaukset
+                    ON l.varaus_id = varaukset.varaus_id
                     JOIN asiakkaat
-                    ON v.asiakas_id = asiakkaat.asiakas_id
+                    ON varaukset.asiakas_id = asiakkaat.asiakas_id
                     JOIN mokit
-                    ON mokit.mokki_id = v.mokki_id
+                    ON mokit.mokki_id = varaukset.mokki_id
                 WHERE asiakkaat.asiakas_id = ?;
                 """;
         try (PreparedStatement stm = conn.prepareStatement(q)){
@@ -536,7 +540,7 @@ public class TallennusLogic {
                 int id = rs.getInt("varaukset.varaus_id");
                 Date alku = LG.convert2util(rs.getDate("varaukset.alku_pvm"));
                 Date loppu = LG.convert2util(rs.getDate("varaukset.loppu_pvm"));
-                double hinta = rs.getDouble("varaukset.hinta");
+                double hinta = rs.getDouble("varaukset.hinta_per_yo");
 
                 Mokki mokki = new Mokki(rs.getInt("mokit.mokki_id"),
                         rs.getInt("mokit.kapasiteetti"),
@@ -559,4 +563,18 @@ public class TallennusLogic {
         }
         return laskut;
     }
+
+    public boolean poistaLasku(int id) {
+        String q = "DELETE FROM laskut WHERE lasku_id = ?;";
+        try (PreparedStatement stm = conn.prepareStatement(q)){
+            stm.setInt(1, id);
+            return stm.execute();
+        } catch (Exception e) {
+            LG.log(e.toString());
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    // TODO foreign key poisto.
 }
