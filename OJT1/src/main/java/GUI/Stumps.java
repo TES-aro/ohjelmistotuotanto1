@@ -7,7 +7,7 @@ public class Stumps {
 
     public Kayttaja getKayttaja(String ID){
         //TODO hakee kayttajan databasesta.
-        return new Kayttaja("Erkki Pertti", "12345", 567, "test@test.com");
+        return new Kayttaja("Erkki Pertti", "12345", 567, "test@test.com", "045045045");
     }
 }
 
