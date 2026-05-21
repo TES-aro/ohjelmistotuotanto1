@@ -62,9 +62,7 @@ public class LaskuLogic {
             kirjuri.write("Ajalla:    " + lasku.getVaraus().getAlku() + " – " + lasku.getVaraus().getLoppu() + "\n");
             kirjuri.write("Eräpäivä:  " + lasku.getErapaiva() + "\n\n");
 
-            // TODO Luetellaan kaikki laskutettavat rivit
-
-            // kirjuri.write(String.format("YHTEENSÄ:  %.2f €%n", lasku.getLoppusumma()));
+            kirjuri.write(String.format("Yhteensä:  %.2f €%n", lasku.getKokonaissumma()));
 
             if (lasku.isMaksettu()) {kirjuri.write("Maksettu: Kyllä");}
             else if (!lasku.isMaksettu()) {kirjuri.write("Maksettu: Ei");}
