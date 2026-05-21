@@ -21,11 +21,19 @@ public class RaporttiLogic {
         sb.append("Raportti\n\n");
 
         for (Mokki m : mokit) {
+            String tila;
+
+            if (onVarattuNyt(m, varaukset) == true) {
+                tila = "VARATTU";
+            } else {
+                tila = "VAPAA";
+            }
+            
             sb.append("Mökki #").append(m.getID())
                     .append(" - ").append(m.getOsoite())
                     .append(" - ").append(m.getKapasiteetti()).append(" hlö")
                     .append(" - ").append(m.getHinta()).append(" euroa/yö")
-                    .append(" - ").append(onVarattuNyt(m, varaukset) ? "VARATTU" : "VAPAA")
+                    .append(" - ").append(tila)
                     .append("\n");
         }
 
