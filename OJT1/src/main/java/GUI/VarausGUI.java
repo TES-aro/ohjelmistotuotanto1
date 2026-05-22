@@ -1,11 +1,17 @@
 package GUI;
 
-import Logic.MokkiLogic;
-import Logic.RaporttiLogic;
-import Logic.TallennusLogic;
-import Logic.VarausLogic;
-import Structs.Mokki;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+
+import Structs.*;
+
 import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,27 +23,64 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.List;
-
 public class VarausGUI extends Application {
+    // Napit näkymän vaihtoon
     Button mokit          = new Button("Mökit");
     Button laskut         = new Button("Laskut");
     Button varaukset      = new Button("Varaukset");
     Button asiakkaat      = new Button("Asiakkaat");
     Button raportit       = new Button("Raportit");
 
+    //Napit tietokannan muutteluun
     Button muokkaa        = new Button("Muokkaa");
     Button tallenna       = new Button("Tallenna");
     Button poista         = new Button("Poista");
     Button luo            = new Button("Luo");
     HBox poistaJaLuo      = new HBox(poista, luo);
 
-    //Mökki-oliot
-    Mokki mokki1 = new Mokki(1, 10, 10);
-    Mokki mokki2 = new Mokki(2, 15,  15);
-    Mokki mokki3 = new Mokki(3, 20,  20);
-    List<Mokki> mokkilista = List.of(mokki1, mokki2, mokki3);
+    // Pitää kirjaa valitusta näkymästä
+    private enum Nakymatyyppi { ASIAKKAAT, VARAUKSET, LASKUT, MOKIT }
+    private Nakymatyyppi nykyinenNakyma = Nakymatyyppi.MOKIT;
 
+    // Muuttujat pitämään kirjaa valitusta kohteesta listassa
+    private Kayttaja valittuAsiakas = null;
+    private Varaus valittuVaraus = null;
+    private Lasku valittuLasku = null;
+    private Mokki valittuMokki = null;
+
+    // Päivämäärä testaamiseen
+    Date tanaan = parseLocalDate(LocalDate.now());
+
+    // Mökki-oliot testaamiseen
+    Mokki mokki1 = new Mokki("Kanada", 10,false, 200);
+    Mokki mokki2 = new Mokki("Turku", 15, true, 400);
+    Mokki mokki3 = new Mokki("Suomi", 20, false, 600);
+
+    // Kayttaja-oliot testaamiseen
+    Kayttaja kayttaja1 = new Kayttaja("Jussi", "Jokinen",0, "jussi.jokinen@example.com", "0401234567");
+    Kayttaja kayttaja2 = new Kayttaja("Matti", "Meikäläinen",1, "matti.meikalainen@example.com", "0409876543");
+    Kayttaja kayttaja3 = new Kayttaja("Risto", "Rauta",2, "risto.rauta@example.com", "0407654321");
+    Kayttaja kayttaja = new Kayttaja("Testi", "Testaaja",3, "testi.testaaja@example.com", "0401234567");
+
+    // Varaus-oliot testaamiseen
+    Varaus varaus1 = new Varaus(0, mokki1, kayttaja1, tanaan, parseLocalDate(LocalDate.now().plusDays(3)), 200.0);
+    Varaus varaus2 = new Varaus(1, mokki2, kayttaja2, tanaan, parseLocalDate(LocalDate.now().plusDays(5)), 400.0);
+    Varaus varaus3 = new Varaus(2, mokki3, kayttaja3, tanaan, parseLocalDate(LocalDate.now().plusDays(6)), 600.0);
+    Varaus varaus = new Varaus(3, mokki1, kayttaja, tanaan, parseLocalDate(LocalDate.now().plusDays(10)), 300.0);
+
+    // Lasku-oliot testaamiseen
+    Lasku lasku1 = new Lasku(kayttaja1, varaus1,parseLocalDate(LocalDate.now().plusDays(10)),varaus1.getHinta());
+    Lasku lasku2 = new Lasku(kayttaja2, varaus2,parseLocalDate(LocalDate.now().plusDays(13)),varaus2.getHinta());
+    Lasku lasku3 = new Lasku(kayttaja3, varaus3,parseLocalDate(LocalDate.now().plusDays(1)),varaus3.getHinta());
+    Lasku lasku = new Lasku(kayttaja, varaus,parseLocalDate(LocalDate.now().plusDays(10)), varaus.getHinta());
+
+    // Listat testiolioiden säilömiseen
+    private final List<Kayttaja> asiakasLista = new ArrayList<>(List.of(kayttaja1, kayttaja2, kayttaja3));
+    private final List<Varaus> varausLista = new ArrayList<>(List.of(varaus1, varaus2, varaus3));
+    private final List<Lasku> laskuLista = new ArrayList<>(List.of(lasku1, lasku2, lasku3));
+    private final List<Mokki> mokkiLista = new ArrayList<>(List.of(mokki1, mokki2, mokki3));
+
+    // Panet käyttöliittymäelementtien säilömiseen
     ScrollPane scrollPane = new ScrollPane();
     VBox listaus          = new VBox(scrollPane, poistaJaLuo);
     HBox nakymavalinta    = new HBox(mokit, laskut, varaukset, asiakkaat, raportit);
@@ -50,20 +93,19 @@ public class VarausGUI extends Application {
         launch(args);
     }
 
-
-    // Sisältää kaikki asetukset ja toiminnot näkymän osalta
-    public void nakymaAsetukset() {
+    // Sisältää näkymän asetuksia
+    private void nakymaAsetukset() {
         mokit.setDisable(true);
         poistaJaLuo.setSpacing(10);
         lisatietonapit.setSpacing(10);
         lisatietonakyma.setSpacing(10);
         listaus.setSpacing(10);
         nakyma.setSpacing(10);
-        scrollPane.setPrefSize(300, 200);
+        scrollPane.setPrefSize(200, 300);
     }
 
     // Luo tekstikentät mökin tietojen näyttämiseen
-    public void luoMokkiKentat() {
+    private void luoMokkiKentat(GridPane kentat) {
         if (!kentat.getChildren().isEmpty()) {  kentat.getChildren().clear();  }
         TextField mokki_ID = new TextField();
         mokki_ID.setEditable(false);
@@ -74,7 +116,7 @@ public class VarausGUI extends Application {
 
         TextField mokkiOmistaja = new TextField();
         mokkiOmistaja.setEditable(false);
-        Label mokkiOmistajaLabel = new Label("Mokin Omistaja:");
+        Label mokkiOmistajaLabel = new Label("Hinta:");
         mokkiOmistajaLabel.setLabelFor(mokkiOmistaja);
         kentat.add(mokkiOmistajaLabel, 0, 2);
         kentat.add(mokkiOmistaja, 0, 3);
@@ -101,7 +143,8 @@ public class VarausGUI extends Application {
         kentat.add(varausTila, 0, 5);
     }
 
-    public void luoLaskuKentat() {
+    // Luo tekstikentät laskun tiedoille
+    private void luoLaskuKentat(GridPane kentat) {
         if (!kentat.getChildren().isEmpty()) {  kentat.getChildren().clear();  }
         TextField laskuID = new TextField();
         laskuID.setEditable(false);
@@ -138,15 +181,23 @@ public class VarausGUI extends Application {
         kentat.add(laskuTilaLabel, 0, 4);
         kentat.add(laskuTila, 0, 5);
 
-        TextField loppuSumma = new TextField();
-        loppuSumma.setEditable(false);
-        Label loppuSummaLabel = new Label("Varattu:");
-        laskuTilaLabel.setLabelFor(loppuSumma);
-        kentat.add(loppuSummaLabel, 1, 4);
-        kentat.add(loppuSumma, 1, 5);
+        TextField kokonaisSumma = new TextField();
+        kokonaisSumma.setEditable(false);
+        Label kokonaisSummaLabel = new Label("Kokonaissumma:");
+        kokonaisSummaLabel.setLabelFor(kokonaisSumma);
+        kentat.add(kokonaisSummaLabel, 1, 4);
+        kentat.add(kokonaisSumma, 1, 5);
+
+        TextField maksaja = new TextField();
+        maksaja.setEditable(false);
+        Label maksajaLabel = new Label("Maksaja:");
+        maksajaLabel.setLabelFor(maksaja);
+        kentat.add(maksajaLabel, 0, 6);
+        kentat.add(maksaja, 0, 7);
     }
 
-    public void luoVarausKentat() {
+    // Luo tekstikentät varaustiedoille
+    private void luoVarausKentat(GridPane kentat) {
         if (!kentat.getChildren().isEmpty()) {  kentat.getChildren().clear();  }
         TextField varausID = new TextField();
         varausID.setEditable(false);
@@ -191,7 +242,8 @@ public class VarausGUI extends Application {
         kentat.add(hintaPerYo, 1, 5);
     }
 
-    public void luoAsiakasKentat() {
+    // Luo tekstikentät asiakkaan tiedoille
+    private void luoAsiakasKentat(GridPane kentat) {
         if (!kentat.getChildren().isEmpty()) {  kentat.getChildren().clear();  }
         TextField asiakasID = new TextField();
         asiakasID.setEditable(false);
@@ -204,25 +256,33 @@ public class VarausGUI extends Application {
         etuNimi.setEditable(false);
         Label etuNimiLabel = new Label("Etunimi:");
         etuNimiLabel.setLabelFor(etuNimi);
-        kentat.add(etuNimiLabel, 0, 2);
-        kentat.add(etuNimi, 0, 3);
+        kentat.add(etuNimiLabel, 1, 0);
+        kentat.add(etuNimi, 1, 1);
 
         TextField sukuNimi = new TextField();
         sukuNimi.setEditable(false);
         Label sukuNimiLabel = new Label("Sukunimi:");
         sukuNimiLabel.setLabelFor(sukuNimi);
-        kentat.add(sukuNimiLabel, 1, 2);
-        kentat.add(sukuNimi, 1, 3);
+        kentat.add(sukuNimiLabel, 0, 2);
+        kentat.add(sukuNimi, 0, 3);
 
         TextField puhNro = new TextField();
         puhNro.setEditable(false);
         Label puhNroLabel = new Label("Puhelinnumero:");
         puhNroLabel.setLabelFor(puhNro);
-        kentat.add(puhNroLabel, 1, 0);
-        kentat.add(puhNro, 1, 1);
+        kentat.add(puhNroLabel, 1, 2);
+        kentat.add(puhNro, 1, 3);
+
+        TextField sPosti = new TextField();
+        sPosti.setEditable(false);
+        Label sPostiLabel = new Label("Sähköposti:");
+        sPostiLabel.setLabelFor(sPosti);
+        kentat.add(sPostiLabel, 0, 4);
+        kentat.add(sPosti, 0, 5);
     }
 
-    public void asetaKentatMuokattaviksi() {
+    // Asettaa tekstikentät muokattaviksi, jotta käyttäjä voi muokata tietoja
+    private void asetaKentatMuokattaviksi(GridPane kentat) {
         kentat.getChildren().forEach(node -> {
             if (node instanceof TextField textField) {
                 textField.setEditable(true);
@@ -230,43 +290,407 @@ public class VarausGUI extends Application {
         });
     }
 
-    //TODO: luo mökkilista, lisäksi funktiot muille listoille
-    public void luoMokkiLista() {
-        for (Mokki mokki : mokkilista) {
-            Text text = new Text(mokki.toString());
-            scrollPane.setContent(text);
+    private void asetaKentatEiMuokattaviksi(GridPane kentat) {
+        kentat.getChildren().forEach(node -> {
+            if (node instanceof TextField textField) {
+                textField.setEditable(false);
+            }
+        });
+        switch (nykyinenNakyma) {
+            case MOKIT -> luoMokkiLista();
+            case LASKUT -> luoLaskuLista();
+            case ASIAKKAAT -> luoAsiakasLista();
+            case VARAUKSET -> luoVarausLista();
         }
+    }
+
+    // Asettaa mökkiin liittyvät tiedot tekstikenttiin
+    private void mokinTiedotKenttiin(Mokki mokki) {
+        int i = 0;
+        for (Node node : kentat.getChildren()) {
+            if (node instanceof TextField textField) {
+                switch (i) {
+                    case 0:
+                        textField.setText(String.valueOf(mokki.getID()));
+                        break;
+                    case 1:
+                        textField.setText(String.valueOf(mokki.getHinta()));
+                        break;
+                    case 2:
+                        textField.setText(mokki.getOsoite());
+                        break;
+                    case 3:
+                        textField.setText(String.valueOf(mokki.getKapasiteetti()));
+                        break;
+                    case 4:
+                        textField.setText(mokki.getOnkoVarattu() ? "Kyllä" : "Ei");
+                        break;
+                }
+                i++;
+            }
+        }
+    }
+
+    // Asettaa laskun tiedot tekstikenttiin
+    private void laskunTiedotKenttiin(Lasku lasku) {
+        int i = 0;
+        for (Node node : kentat.getChildren()) {
+            if (node instanceof TextField textField) {
+                switch (i) {
+                    case 0:
+                        textField.setText(String.valueOf(lasku.getLaskuID()));
+                        break;
+                    case 1:
+                        textField.setText(String.valueOf(lasku.getVaraus().getID()));
+                        break;
+                    case 2:
+                        textField.setText(String.valueOf(parseDate(lasku.getLuontipvm())));
+                        break;
+                    case 3:
+                        textField.setText(String.valueOf(parseDate(lasku.getErapaiva())));
+                        break;
+                    case 4:
+                        textField.setText(lasku.isMaksettu() ? "Maksettu" : "Ei maksettu");
+                        break;
+                    case 5:
+                        textField.setText(String.valueOf(lasku.getKokonaissumma()));
+                        break;
+                    case 6:
+                        textField.setText(lasku.getMaksaja().getSukunimi() + " " + lasku.getMaksaja().getEtunimi());
+                }
+                i++;
+            }
+        }
+    }
+
+    // Asettaa varaustiedot tekstikenttiin
+    private void varauksenTiedotKenttiin(Varaus varaus) {
+        int i = 0;
+        for (Node node : kentat.getChildren()) {
+            if (node instanceof TextField textField) {
+                switch (i) {
+                    case 0:
+                        textField.setText(String.valueOf(varaus.getID()));
+                        break;
+                    case 1:
+                        textField.setText(String.valueOf(varaus.getVaraaja().getID()));
+                        break;
+                    case 2:
+                        textField.setText(String.valueOf(varaus.getVarattuMokki().getID()));
+                        break;
+                    case 3:
+                        textField.setText(String.valueOf(parseDate(varaus.getAlku())));
+                        break;
+                    case 4:
+                        textField.setText(String.valueOf(parseDate(varaus.getLoppu())));
+                        break;
+                    case 5:
+                        textField.setText(String.valueOf(varaus.getHinta()));
+                }
+                i++;
+            }
+        }
+    }
+
+    // Asettaa asiakkaan tiedot tekstikenttiin
+    private void asiakkaanTiedotKenttiin(Kayttaja asiakas) {
+        int i = 0;
+        for (Node node : kentat.getChildren()) {
+            if (node instanceof TextField textField) {
+                switch (i) {
+                    case 0:
+                        textField.setText(String.valueOf(asiakas.getID()));
+                        break;
+                    case 1:
+                        textField.setText(asiakas.getEtunimi());
+                        break;
+                    case 2:
+                        textField.setText(asiakas.getSukunimi());
+                        break;
+                    case 3:
+                        textField.setText(asiakas.getPuhelinNro());
+                        break;
+                    case 4:
+                        textField.setText(asiakas.getSahkoposti());
+                }
+                i++;
+            }
+        }
+    }
+
+    // Luo listan kaikista tietokannan mökeistä
+    private void luoMokkiLista() {
+        VBox vbox = new VBox();
+        for (Mokki mokki : mokkiLista) {
+            Button text = new Button(mokki.getID() +", "+ mokki.getOsoite());
+            text.setOnAction(e -> {
+                mokinTiedotKenttiin(mokki);
+                valittuMokki = mokki;
+                luoMokkiLista();
+            });
+            text.setPrefWidth(195);
+            vbox.getChildren().add(text);
+        }
+        scrollPane.setContent(vbox);
+    }
+
+    // Luo listan kaikista tietokannan laskuista
+    private void luoLaskuLista() {
+        VBox vbox = new VBox();
+        for (Lasku lasku : laskuLista) {
+            Button text = new Button(lasku.getMaksaja().getSukunimi() +", "+ parseDate(lasku.getErapaiva()));
+            text.setOnAction(e -> {
+                laskunTiedotKenttiin(lasku);
+                valittuLasku = lasku;
+                luoLaskuLista();
+            });
+            vbox.getChildren().add(text);
+            text.setPrefWidth(195);
+        }
+        scrollPane.setContent(vbox);
+    }
+
+    // Luo listan kaikista tietokannan varauksista
+    private void luoVarausLista() {
+        VBox vbox = new VBox();
+        for (Varaus varaus : varausLista) {
+            Button text = new Button(varaus.getVaraaja().getSukunimi() +", "+ parseDate(varaus.getAlku()));
+            text.setOnAction(e -> {
+                valittuVaraus = varaus;
+                varauksenTiedotKenttiin(varaus);
+                luoVarausLista();
+            });
+            vbox.getChildren().add(text);
+            text.setPrefWidth(195);
+        }
+        scrollPane.setContent(vbox);
+    }
+
+    // Luo listan kaikista tietokannan asiakkaista
+    private void luoAsiakasLista() {
+        VBox vbox = new VBox();
+        for (Kayttaja k : asiakasLista) {
+            Button text = new Button(k.getSukunimi() +" "+ k.getEtunimi());
+            text.setOnAction(e -> {
+                valittuAsiakas = k;
+                asiakkaanTiedotKenttiin(k);
+                luoAsiakasLista();
+            });
+            vbox.getChildren().add(text);
+            text.setPrefWidth(195);
+        }
+        scrollPane.setContent(vbox);
+    }
+
+    private Mokki lueMokinTiedot(GridPane kentat) {
+        int i = 0;
+        int mokkiID = 0;
+        String osoite = null;
+        int kapasiteetti = 0;
+        double hinta = 0;
+        boolean varattu = false;
+        for (Node node : kentat.getChildren()) {
+            if (node instanceof TextField textField) {
+                switch (i) {
+                    case 0:
+                        mokkiID = Integer.parseInt(textField.getText());
+                        break;
+                    case 1:
+                        hinta = Double.parseDouble(textField.getText());
+                        break;
+                    case 2:
+                        osoite = textField.getText();
+                        break;
+                    case 3:
+                        kapasiteetti = Integer.parseInt(textField.getText());
+                        break;
+                    case 4:
+                        switch (textField.getText().trim()) {
+                            case "Kyllä":
+                                varattu = true;
+                                break;
+                            case "Ei":
+                                varattu = false;
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Invalid value for onkoVarattu: " + textField.getText());
+                        }
+                }
+                i++;
+            }
+        }
+        Mokki mokki = new Mokki(mokkiID, osoite, kapasiteetti, varattu, hinta);
+        return mokki;
+    }
+
+    private Lasku lueLaskunTiedot(GridPane kentat) {
+        int laskuID = 0;
+        Varaus varaus;
+        Date luontiPvm = tanaan;
+        Date eraPvm = tanaan;
+        boolean maksettu = false;
+        double summa = 0;
+        Kayttaja Maksaja;
+
+        int i = 1;
+        for (Node node : kentat.getChildren()) {
+            if (node instanceof TextField textField) {
+                switch (i) {
+                    case 1:
+                        laskuID = Integer.parseInt(textField.getText());
+                        break;
+                    case 2:
+                        // varausID = Integer.parseInt(textField.getText());
+                        break;
+                    case 3:
+                        luontiPvm = parseLocalDate(LocalDate.parse(textField.getText()));
+                        break;
+                    case 4:
+                        eraPvm = parseLocalDate(LocalDate.parse(textField.getText()));
+                        break;
+                    case 5:
+                        switch (textField.getText().trim()) {
+                            case "Maksettu":
+                                maksettu = true;
+                                break;
+                            case "Ei maksettu":
+                                maksettu = false;
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Invalid value for maksettu: " + textField.getText());
+                        }
+                        break;
+                    case 6:
+                        summa = Double.parseDouble(textField.getText());
+                        break;
+                    case 7:
+                        // maksaja = textField.getText();
+                        break;
+                }
+                i++;
+            }
+        }
+        return new Lasku(laskuID, kayttaja, this.varaus, maksettu, luontiPvm, eraPvm, summa);
+    }
+
+    private Varaus lueVarauksenTiedot(GridPane kentat) {
+        int ID = 0;
+        Mokki mokki;
+        Kayttaja varaaja;
+        Date alku = null;
+        Date loppu = null;
+        double hinta = 0;
+        int i = 0;
+        for (Node node : kentat.getChildren()) {
+            if (node instanceof TextField textField) {
+                switch (i) {
+                    case 0:
+                        ID = Integer.parseInt(textField.getText());
+                        break;
+                    case 1:
+                        // TODO: etsi varaaja tietokannasta ID:llä
+                        // varaus.setVaraaja(textField.getText());
+                        break;
+                    case 2:
+                        // TODO: etsi mökki tietokannasta ID:llä
+                        // varaus.setVarattuMokki(textField.getText());
+                        break;
+                    case 3:
+                        alku = parseLocalDate(LocalDate.parse(textField.getText()));
+                        break;
+                    case 4:
+                        loppu = parseLocalDate(LocalDate.parse(textField.getText()));
+                        break;
+                    case 5:
+                        hinta = Double.parseDouble(textField.getText());
+                        break;
+                }
+                i++;
+            }
+        }
+        return new Varaus(ID, this.mokki3, this.kayttaja, alku, loppu, hinta);
+    }
+
+    private Kayttaja lueAsiakkaanTiedot(GridPane kentat) {
+        Kayttaja asiakas = kayttaja;
+        int i = 0;
+        for (Node node : kentat.getChildren()) {
+            if (node instanceof TextField textField) {
+                switch (i) {
+                    case 0:
+                        asiakas.setID(Integer.parseInt(textField.getText()));
+                        break;
+                    case 1:
+                        asiakas.setEtunimi(textField.getText());
+                        break;
+                    case 2:
+                        asiakas.setSukunimi(textField.getText());
+                        break;
+                    case 3:
+                        asiakas.setPuhelinNro(textField.getText());
+                        break;
+                    case 4:
+                        asiakas.setSahkoposti(textField.getText());
+                        break;
+                }
+                i++;
+            }
+        }
+        return asiakas;
+    }
+
+    private LocalDate parseDate(Date date) {
+        return date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
+    private Date parseLocalDate(LocalDate date) {
+        return Date.from(date.atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
     }
 
     @Override
     public void start(Stage primaryStage) {
-        luoMokkiKentat();
+        System.out.println(LocalDate.ofInstant(tanaan.toInstant(), ZoneId.systemDefault()));
+        luoMokkiKentat(kentat);
         nakymaAsetukset();
         luoMokkiLista();
 
         mokit.setOnAction(e -> {
-            luoMokkiKentat();
+            // Valitsee mökkinäkymän
+            nykyinenNakyma = Nakymatyyppi.MOKIT;
+            luoMokkiKentat(kentat);
+            luoMokkiLista();
             mokit.setDisable(true);
             laskut.setDisable(false);
             varaukset.setDisable(false);
             asiakkaat.setDisable(false);
         });
         laskut.setOnAction(e -> {
-            luoLaskuKentat();
+            // Valitsee laskunäkymän
+            nykyinenNakyma = Nakymatyyppi.LASKUT;
+            luoLaskuKentat(kentat);
+            luoLaskuLista();
             mokit.setDisable(false);
             laskut.setDisable(true);
             varaukset.setDisable(false);
             asiakkaat.setDisable(false);
         });
         varaukset.setOnAction(e -> {
-            luoVarausKentat();
+            // Valitsee varausnäkymän
+            nykyinenNakyma = Nakymatyyppi.VARAUKSET;
+            luoVarausKentat(kentat);
+            luoVarausLista();
             mokit.setDisable(false);
             laskut.setDisable(false);
             varaukset.setDisable(true);
             asiakkaat.setDisable(false);
         });
         asiakkaat.setOnAction(e -> {
-            luoAsiakasKentat();
+            nykyinenNakyma = Nakymatyyppi.ASIAKKAAT;
+            luoAsiakasKentat(kentat);
+            luoAsiakasLista();
             mokit.setDisable(false);
             laskut.setDisable(false);
             varaukset.setDisable(false);
@@ -274,6 +698,7 @@ public class VarausGUI extends Application {
         });
 
         raportit.setOnAction(e -> {
+            // Luo uuden ikkunan, jossa napit raporttien luomiseen
             Text text = new Text("TODO: Raportti namiskat tähän");
             VBox vbox = new VBox(text);
             Scene scene = new Scene(vbox, 300, 200);
@@ -282,16 +707,110 @@ public class VarausGUI extends Application {
             stage.show();
         });
 
-        muokkaa.setOnAction(e -> {asetaKentatMuokattaviksi();});
+        muokkaa.setOnAction(e -> {asetaKentatMuokattaviksi(kentat);});
 
-        //TODO: tallenna muokatut tiedot tietokantaan
-        tallenna.setOnAction(e -> {});
+        tallenna.setOnAction(e -> {
+            // Lukee tiedot tekstikentistä, ja muuttaa tietokantaan
+            switch (nykyinenNakyma) {
+                case MOKIT:
+                    mokkiLista.remove(valittuMokki);
+                    mokkiLista.add(lueMokinTiedot(kentat));
+                    break;
+                case LASKUT:
+                    laskuLista.remove(valittuLasku);
+                    laskuLista.add(lueLaskunTiedot(kentat));
+                    break;
+                case VARAUKSET:
+                    varausLista.remove(valittuVaraus);
+                    varausLista.add(lueVarauksenTiedot(kentat));
+                    break;
+                case ASIAKKAAT:
+                    asiakasLista.remove(valittuAsiakas);
+                    asiakasLista.add(lueAsiakkaanTiedot(kentat));
+                    break;
+            }
+            asetaKentatEiMuokattaviksi(kentat);
+        });
 
-        //TODO: luo uusi juttu mikänytonkaa tietokantaan
-        luo.setOnAction(e -> {});
+        luo.setOnAction(e -> {
+            // Luo uuden ikkunan, jossa lisätään uusi tieto tietokantaan
+            GridPane root = new GridPane();
+            root.setHgap(10);
+            root.setVgap(10);
+            Button lisaaTietoKantaan = new Button("Tallenna");
+            VBox vbox = new VBox(root, lisaaTietoKantaan);
+            Stage stage = new Stage();
+            Scene scene = new Scene(vbox);
+            switch (nykyinenNakyma) {
+                case MOKIT:
+                    luoMokkiKentat(root);
+                    break;
+                case LASKUT:
+                    luoLaskuKentat(root);
+                    break;
+                case VARAUKSET:
+                    luoVarausKentat(root);
+                    break;
+                case ASIAKKAAT:
+                    luoAsiakasKentat(root);
+                    break;
+            }
 
-        //TODO: poista valittu juttu tietokannasta
-        poista.setOnAction(e -> {});
+            lisaaTietoKantaan.setOnAction(ee -> {
+                // Lukee tiedot tekstikentistä, ja lisää ne tietokantaan
+                switch (nykyinenNakyma) {
+                    case MOKIT: {
+                        mokkiLista.add(lueMokinTiedot(root));
+                    }
+                    case LASKUT: {
+                        laskuLista.add(lueLaskunTiedot(root));
+                    }
+                    case VARAUKSET: {
+                        varausLista.add(lueVarauksenTiedot(root));
+                    }
+                    case ASIAKKAAT: {
+                        asiakasLista.add(lueAsiakkaanTiedot(root));
+                    }
+                }
+                stage.close();
+            });
+            stage.setTitle("Lisää");
+            stage.setScene(scene);
+            stage.show();
+        });
+
+        poista.setOnAction(e -> {
+            switch (nykyinenNakyma) {
+                case ASIAKKAAT: {
+                    if (valittuAsiakas != null) {
+                        asiakasLista.remove(valittuAsiakas);
+                        valittuAsiakas = null;
+                        luoAsiakasLista();
+                    }
+                }
+                case VARAUKSET: {
+                    if (valittuVaraus != null) {
+                        varausLista.remove(valittuVaraus);
+                        valittuVaraus = null;
+                        luoVarausLista();
+                    }
+                }
+                case LASKUT: {
+                    if (valittuLasku != null) {
+                        laskuLista.remove(valittuLasku);
+                        valittuLasku = null;
+                        luoLaskuLista();
+                    }
+                }
+                case MOKIT: {
+                    if (valittuMokki != null) {
+                        mokkiLista.remove(valittuMokki);
+                        valittuMokki = null;
+                        luoMokkiLista();
+                    }
+                }
+            }
+        });
 
         VBox root = new VBox(nakymavalinta, nakyma);
         root.setSpacing(30);
@@ -301,4 +820,3 @@ public class VarausGUI extends Application {
         primaryStage.show();
     }
 }
-
