@@ -1,5 +1,8 @@
 package GUI;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.ArrayList;
@@ -19,8 +22,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
-import java.time.LocalDate;
 
 public class VarausGUI extends Application {
     // Napit näkymän vaihtoon
@@ -47,6 +48,9 @@ public class VarausGUI extends Application {
     private Lasku valittuLasku = null;
     private Mokki valittuMokki = null;
 
+    // Päivämäärä testaamiseen
+    Date tanaan = new Date(2026, Calendar.MAY, 22);
+
     // Mökki-oliot testaamiseen
     Mokki mokki1 = new Mokki("Kanada", 10,false, 200);
     Mokki mokki2 = new Mokki("Turku", 15, true, 400);
@@ -59,10 +63,10 @@ public class VarausGUI extends Application {
     Kayttaja kayttaja = new Kayttaja("Testi", "Testaaja",3, "testi.testaaja@example.com", "0401234567");
 
     // Varaus-oliot testaamiseen
-    Varaus varaus1 = new Varaus(0, mokki1, kayttaja1, new Date(2026, Calendar.MAY,22), new Date(2026, Calendar.MAY,25), 200.0);
-    Varaus varaus2 = new Varaus(1, mokki2, kayttaja2, new Date(2026, Calendar.MAY,22), new Date(2026, Calendar.MAY,27), 400.0);
-    Varaus varaus3 = new Varaus(2, mokki3, kayttaja3, new Date(2026, Calendar.MAY,22), new Date(2026, Calendar.MAY,29), 600.0);
-    Varaus varaus = new Varaus(3, mokki1, kayttaja, new Date(2026, Calendar.MAY,22), new Date(2026, Calendar.JUNE,1), 300.0);
+    Varaus varaus1 = new Varaus(0, mokki1, kayttaja1, tanaan, new Date(2026, Calendar.MAY,25), 200.0);
+    Varaus varaus2 = new Varaus(1, mokki2, kayttaja2, tanaan, new Date(2026, Calendar.MAY,27), 400.0);
+    Varaus varaus3 = new Varaus(2, mokki3, kayttaja3, tanaan, new Date(2026, Calendar.MAY,29), 600.0);
+    Varaus varaus = new Varaus(3, mokki1, kayttaja, tanaan, new Date(2026, Calendar.JUNE,1), 300.0);
 
     // Lasku-oliot testaamiseen
     Lasku lasku1 = new Lasku(kayttaja1, varaus1,new Date(2026, Calendar.JUNE,1),varaus1.getHinta());
@@ -292,6 +296,12 @@ public class VarausGUI extends Application {
                 textField.setEditable(false);
             }
         });
+        switch (nykyinenNakyma) {
+            case MOKIT -> luoMokkiLista();
+            case LASKUT -> luoLaskuLista();
+            case ASIAKKAAT -> luoAsiakasLista();
+            case VARAUKSET -> luoVarausLista();
+        }
     }
 
     // Asettaa mökkiin liittyvät tiedot tekstikenttiin
@@ -369,10 +379,10 @@ public class VarausGUI extends Application {
                         textField.setText("VarausID");
                         break;
                     case 3:
-                        textField.setText(String.valueOf(varaus.getAlku()));
+                        textField.setText(String.valueOf(LocalDate.ofInstant(varaus.getAlku().toInstant(), ZoneId.systemDefault())));
                         break;
                     case 4:
-                        textField.setText(String.valueOf(varaus.getLoppu()));
+                        textField.setText(String.valueOf(LocalDate.ofInstant(varaus.getLoppu().toInstant(), ZoneId.systemDefault())));
                         break;
                     case 5:
                         textField.setText("Hinta/yö");
@@ -614,6 +624,7 @@ public class VarausGUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        System.out.println(LocalDate.ofInstant(tanaan.toInstant(), ZoneId.systemDefault()));
         luoMokkiKentat(kentat);
         nakymaAsetukset();
         luoMokkiLista();
