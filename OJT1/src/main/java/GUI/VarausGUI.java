@@ -49,7 +49,7 @@ public class VarausGUI extends Application {
     private Mokki valittuMokki = null;
 
     // Päivämäärä testaamiseen
-    Date tanaan = new Date(2026, Calendar.MAY, 22);
+    Date tanaan = parseLocalDate(LocalDate.now());
 
     // Mökki-oliot testaamiseen
     Mokki mokki1 = new Mokki("Kanada", 10,false, 200);
@@ -63,16 +63,16 @@ public class VarausGUI extends Application {
     Kayttaja kayttaja = new Kayttaja("Testi", "Testaaja",3, "testi.testaaja@example.com", "0401234567");
 
     // Varaus-oliot testaamiseen
-    Varaus varaus1 = new Varaus(0, mokki1, kayttaja1, tanaan, new Date(2026, Calendar.MAY,25), 200.0);
-    Varaus varaus2 = new Varaus(1, mokki2, kayttaja2, tanaan, new Date(2026, Calendar.MAY,27), 400.0);
-    Varaus varaus3 = new Varaus(2, mokki3, kayttaja3, tanaan, new Date(2026, Calendar.MAY,29), 600.0);
-    Varaus varaus = new Varaus(3, mokki1, kayttaja, tanaan, new Date(2026, Calendar.JUNE,1), 300.0);
+    Varaus varaus1 = new Varaus(0, mokki1, kayttaja1, tanaan, parseLocalDate(LocalDate.now().plusDays(3)), 200.0);
+    Varaus varaus2 = new Varaus(1, mokki2, kayttaja2, tanaan, parseLocalDate(LocalDate.now().plusDays(5)), 400.0);
+    Varaus varaus3 = new Varaus(2, mokki3, kayttaja3, tanaan, parseLocalDate(LocalDate.now().plusDays(6)), 600.0);
+    Varaus varaus = new Varaus(3, mokki1, kayttaja, tanaan, parseLocalDate(LocalDate.now().plusDays(10)), 300.0);
 
     // Lasku-oliot testaamiseen
-    Lasku lasku1 = new Lasku(kayttaja1, varaus1,new Date(2026, Calendar.JUNE,1),varaus1.getHinta());
-    Lasku lasku2 = new Lasku(kayttaja2, varaus2,new Date(2026, Calendar.JUNE,4),varaus2.getHinta());
-    Lasku lasku3 = new Lasku(kayttaja3, varaus3,new Date(2026, Calendar.MAY,23),varaus3.getHinta());
-    Lasku lasku = new Lasku(kayttaja, varaus,new Date(2026, Calendar.JUNE,1), varaus.getHinta());
+    Lasku lasku1 = new Lasku(kayttaja1, varaus1,parseLocalDate(LocalDate.now().plusDays(10)),varaus1.getHinta());
+    Lasku lasku2 = new Lasku(kayttaja2, varaus2,parseLocalDate(LocalDate.now().plusDays(13)),varaus2.getHinta());
+    Lasku lasku3 = new Lasku(kayttaja3, varaus3,parseLocalDate(LocalDate.now().plusDays(1)),varaus3.getHinta());
+    Lasku lasku = new Lasku(kayttaja, varaus,parseLocalDate(LocalDate.now().plusDays(10)), varaus.getHinta());
 
     // Listat testiolioiden säilömiseen
     private final List<Kayttaja> asiakasLista = new ArrayList<>(List.of(kayttaja1, kayttaja2, kayttaja3));
@@ -344,10 +344,10 @@ public class VarausGUI extends Application {
                         textField.setText(String.valueOf(lasku.getVaraus().getID()));
                         break;
                     case 2:
-                        textField.setText(String.valueOf(lasku.getLuontipvm()));
+                        textField.setText(String.valueOf(parseDate(lasku.getLuontipvm())));
                         break;
                     case 3:
-                        textField.setText(String.valueOf(lasku.getErapaiva()));
+                        textField.setText(String.valueOf(parseDate(lasku.getErapaiva())));
                         break;
                     case 4:
                         textField.setText(lasku.isMaksettu() ? "Maksettu" : "Ei maksettu");
@@ -376,16 +376,16 @@ public class VarausGUI extends Application {
                         textField.setText(String.valueOf(varaus.getVaraaja().getID()));
                         break;
                     case 2:
-                        textField.setText("VarausID");
+                        textField.setText(String.valueOf(varaus.getVarattuMokki().getID()));
                         break;
                     case 3:
-                        textField.setText(String.valueOf(LocalDate.ofInstant(varaus.getAlku().toInstant(), ZoneId.systemDefault())));
+                        textField.setText(String.valueOf(parseDate(varaus.getAlku())));
                         break;
                     case 4:
-                        textField.setText(String.valueOf(LocalDate.ofInstant(varaus.getLoppu().toInstant(), ZoneId.systemDefault())));
+                        textField.setText(String.valueOf(parseDate(varaus.getLoppu())));
                         break;
                     case 5:
-                        textField.setText("Hinta/yö");
+                        textField.setText(String.valueOf(varaus.getHinta()));
                 }
                 i++;
             }
@@ -438,7 +438,7 @@ public class VarausGUI extends Application {
     private void luoLaskuLista() {
         VBox vbox = new VBox();
         for (Lasku lasku : laskuLista) {
-            Button text = new Button(lasku.getMaksaja().getSukunimi() +", "+ lasku.getErapaiva());
+            Button text = new Button(lasku.getMaksaja().getSukunimi() +", "+ parseDate(lasku.getErapaiva()));
             text.setOnAction(e -> {
                 laskunTiedotKenttiin(lasku);
                 valittuLasku = lasku;
@@ -454,7 +454,7 @@ public class VarausGUI extends Application {
     private void luoVarausLista() {
         VBox vbox = new VBox();
         for (Varaus varaus : varausLista) {
-            Button text = new Button(varaus.getVaraaja().getSukunimi() +", "+ varaus.getAlku());
+            Button text = new Button(varaus.getVaraaja().getSukunimi() +", "+ parseDate(varaus.getAlku()));
             text.setOnAction(e -> {
                 valittuVaraus = varaus;
                 varauksenTiedotKenttiin(varaus);
@@ -483,92 +483,109 @@ public class VarausGUI extends Application {
     }
 
     private Mokki lueMokinTiedot(GridPane kentat) {
-        Mokki mokki = new Mokki(67, 67, 67.0, "");
         int i = 0;
+        int mokkiID = 0;
+        String osoite = null;
+        int kapasiteetti = 0;
+        double hinta = 0;
+        boolean varattu = false;
         for (Node node : kentat.getChildren()) {
             if (node instanceof TextField textField) {
                 switch (i) {
                     case 0:
-                        textField.getText();
+                        mokkiID = Integer.parseInt(textField.getText());
                         break;
-                        case 1:
-                            mokki.setHinta(Double.parseDouble(textField.getText()));
-                            break;
-                            case 2:
-                                mokki.setOsoite(textField.getText());
+                    case 1:
+                        hinta = Double.parseDouble(textField.getText());
+                        break;
+                    case 2:
+                        osoite = textField.getText();
+                        break;
+                    case 3:
+                        kapasiteetti = Integer.parseInt(textField.getText());
+                        break;
+                    case 4:
+                        switch (textField.getText().trim()) {
+                            case "Kyllä":
+                                varattu = true;
                                 break;
-                            case 3:
-                                mokki.setKapasiteetti(Integer.parseInt(textField.getText()));
+                            case "Ei":
+                                varattu = false;
                                 break;
-                            case 4:
-                                switch (textField.getText()) {
-                                    case "Kyllä":
-                                        mokki.setOnkoVarattu(true);
-                                        break;
-                                        case "Ei":
-                                            mokki.setOnkoVarattu(false);
-                                            break;
-                                            default:
-                                                throw new IllegalArgumentException("Invalid value for onkoVarattu: " + textField.getText());
-                                        }
+                            default:
+                                throw new IllegalArgumentException("Invalid value for onkoVarattu: " + textField.getText());
                         }
-                        i++;
-                    }
+                }
+                i++;
+            }
         }
+        Mokki mokki = new Mokki(mokkiID, osoite, kapasiteetti, varattu, hinta);
         return mokki;
     }
 
     private Lasku lueLaskunTiedot(GridPane kentat) {
-        Lasku lasku = this.lasku;
+                int laskuID = 0;
+                Varaus varaus;
+                Date luontiPvm = tanaan;
+                Date eraPvm = tanaan;
+                boolean maksettu = false;
+                double summa = 0;
+                Kayttaja Maksaja;
+
                 int i = 1;
                 for (Node node : kentat.getChildren()) {
                     if (node instanceof TextField textField) {
                         switch (i) {
                             case 1:
-                                lasku.setLaskuID(Integer.parseInt(textField.getText()));
+                                laskuID = Integer.parseInt(textField.getText());
                                 break;
                             case 2:
-                                // lasku.setVarausID(Integer.parseInt(textField.getText()));
+                                // varausID = Integer.parseInt(textField.getText());
                                 break;
                             case 3:
-                                lasku.setLuontipvm(new Date(String.valueOf(textField.getText())));
+                                luontiPvm = parseLocalDate(LocalDate.parse(textField.getText()));
                                 break;
                             case 4:
-                                lasku.setErapaiva(new Date(textField.getText()));
+                                eraPvm = parseLocalDate(LocalDate.parse(textField.getText()));
                                 break;
                                 case 5:
-                                    switch (textField.getText()) {
+                                    switch (textField.getText().trim()) {
                                         case "Maksettu":
-                                            lasku.setMaksettu(true);
+                                            maksettu = true;
                                             break;
                                             case "Ei maksettu":
-                                                lasku.setMaksettu(false);
+                                                maksettu = false;
                                                 break;
                                                 default:
                                                     throw new IllegalArgumentException("Invalid value for maksettu: " + textField.getText());
                                     }
                                     break;
                                     case 6:
-                                        // lasku.setKokonaisSumma(Double.parseDouble(textField.getText()));
+                                        summa = Double.parseDouble(textField.getText());
                                         break;
                                         case 7:
-                                            // lasku.setMaksaja(textField.getText());
+                                            // maksaja = textField.getText();
                                             break;
                         }
                         i++;
                     }
         }
-        return lasku;
+        return new Lasku(laskuID, kayttaja, this.varaus, maksettu, luontiPvm, eraPvm, summa);
     }
 
     private Varaus lueVarauksenTiedot(GridPane kentat) {
-        Varaus varaus = this.varaus;
+        int ID = 0;
+        Mokki mokki;
+        Kayttaja varaaja;
+        Date alku = null;
+        Date loppu = null;
+        double hinta = 0;
         int i = 0;
         for (Node node : kentat.getChildren()) {
             if (node instanceof TextField textField) {
                 switch (i) {
                     case 0:
-                        varaus.setID(Integer.parseInt(textField.getText()));
+                        ID = Integer.parseInt(textField.getText());
                         break;
                     case 1:
                         // TODO: etsi varaaja tietokannasta ID:llä
@@ -579,19 +596,19 @@ public class VarausGUI extends Application {
                         // varaus.setVarattuMokki(textField.getText());
                         break;
                     case 3:
-                        varaus.setAlku(new Date(textField.getText()));
+                        alku = parseLocalDate(LocalDate.parse(textField.getText()));
                         break;
                     case 4:
-                        varaus.setLoppu(new Date(textField.getText()));
+                        loppu = parseLocalDate(LocalDate.parse(textField.getText()));
                         break;
                     case 5:
-                        varaus.setHinta(Double.parseDouble(textField.getText()));
+                        hinta = Double.parseDouble(textField.getText());
                         break;
                 }
                 i++;
             }
         }
-        return varaus;
+        return new Varaus(ID, this.mokki3, this.kayttaja, alku, loppu, hinta);
     }
 
     private Kayttaja lueAsiakkaanTiedot(GridPane kentat) {
@@ -620,6 +637,17 @@ public class VarausGUI extends Application {
             }
         }
         return asiakas;
+    }
+
+    private LocalDate parseDate(Date date) {
+        return date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
+    private Date parseLocalDate(LocalDate date) {
+        return Date.from(date.atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
     }
 
     @Override
@@ -681,7 +709,6 @@ public class VarausGUI extends Application {
 
         muokkaa.setOnAction(e -> {asetaKentatMuokattaviksi(kentat);});
 
-        //TODO: tallenna muokatut tiedot tietokantaan
         tallenna.setOnAction(e -> {
             // Lukee tiedot tekstikentistä, ja muuttaa tietokantaan
             switch (nykyinenNakyma) {
