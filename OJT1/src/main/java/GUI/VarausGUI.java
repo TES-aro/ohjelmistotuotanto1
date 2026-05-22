@@ -20,8 +20,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.time.LocalDate;
-
 public class VarausGUI extends Application {
     // Napit näkymän vaihtoon
     Button mokit          = new Button("Mökit");
